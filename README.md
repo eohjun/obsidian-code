@@ -1,6 +1,6 @@
 # cc-obsidian
 
-![Preview](Preview.png)
+
 
 옵시디언(Obsidian)을 사용하면서 "이 내용을 좀 정리해줘" 혹은 "이 파일을 수정해줘"라고 말만 하면 알아서 해주는 비서가 있다면 얼마나 좋을까요?  
 **cc-obsidian**은 바로 그런 역할을 합니다. 옵시디언 사이드바에서 클로드(Claude)와 대화하며, 클로드가 여러분의 노트를 직접 읽고, 쓰고, 명령어도 실행하게 만드는 강력한 플러그인입니다.
@@ -32,13 +32,20 @@
 
 ## 🚀 설치 방법 (Installation)
 
-### 방법 1: 가장 쉬운 방법 (GitHub Release)
+### 방법 1: BRAT을 이용한 설치 (권장)
 
-1.  [최신 릴리즈 페이지](https://github.com/reallygood83/cc-obsidian/releases/latest)에서 `main.js`, `manifest.json`, `styles.css` 이 3가지 파일을 다운로드합니다.
-2.  여러분의 옵시디언 저장소(Vault) 안에 폴더를 하나 만듭니다:  
-    `.obsidian/plugins/cc-obsidian/`
-3.  다운로드한 3개 파일을 방금 만든 폴더에 넣습니다.
-4.  옵시디언을 켜고 **설정(Settings) → 커뮤니티 플러그인(Community plugins)**에서 "cc-obsidian"을 찾아 켭니다(Enable).
+이 플러그인은 아직 옵시디언 커뮤니티 정식 목록에 등록되지 않았을 수 있습니다. BRAT을 이용하면 가장 편하게 설치하고 업데이트를 받을 수 있습니다.
+
+1.  **BRAT 설치**: 옵시디언 설정 > 커뮤니티 플러그인 > '탐색'에서 `BRAT`을 검색하여 설치하고 활성화합니다.
+2.  **플러그인 추가**: 
+    *   명령어 팔레트(`Cmd/Ctrl + P`)를 엽니다.
+    *   `BRAT: Add a beta plugin for testing`을 입력하고 선택합니다.
+3.  **주소 입력**: 
+    *   URL 입력창에 다음 주소를 복사해서 붙여넣습니다:
+    *   `https://github.com/reallygood83/cc-obsidian`
+4.  **활성화**: 
+    *   설치가 완료되면 알림이 뜹니다.
+    *   **설정(Settings) → 커뮤니티 플러그인(Community plugins)** 목록으로 가서 "cc-obsidian"을 찾아 켜주세요(Enable).
 
 ### 방법 2: 개발자용 설치 (직접 빌드)
 
