@@ -7051,6 +7051,10 @@ var TerminalView = class extends import_obsidian.ItemView {
     this.term.parser?.registerCsiHandler({ final: "I" }, () => true);
     this.term.parser?.registerCsiHandler({ final: "O" }, () => true);
     this.term.attachCustomKeyEventHandler((ev) => {
+      // Skip during IME composition (Korean, Japanese, Chinese input)
+      if (ev.isComposing || ev.keyCode === 229) {
+        return true;
+      }
       if (ev.type === 'keydown') {
         // Cmd+Arrow: readline shortcuts for line navigation
         if (ev.metaKey) {
@@ -7149,16 +7153,27 @@ var TerminalView = class extends import_obsidian.ItemView {
     // Extend PATH to include common Claude Code installation locations
     // This ensures Claude Code is found regardless of how Obsidian was launched
     const homedir = os.homedir();
+    // Find NVM node versions dynamically
+    const nvmDir = path.join(homedir, ".nvm", "versions", "node");
+    let nvmPaths = [];
+    try {
+      if (fs.existsSync(nvmDir)) {
+        const versions = fs.readdirSync(nvmDir).filter(v => v.startsWith("v"));
+        nvmPaths = versions.map(v => path.join(nvmDir, v, "bin"));
+      }
+    } catch (e) { /* ignore */ }
     const additionalPaths = isWindows ? [
       // Windows paths
       path.join(homedir, ".claude", "local", "bin"),  // Claude Code default
       path.join(homedir, "AppData", "Local", ".claude", "local", "bin"),
       path.join(homedir, "AppData", "Roaming", "npm"),  // npm global
       path.join(homedir, ".local", "bin"),
+      path.join(homedir, "AppData", "Roaming", "nvm"),  // NVM for Windows
       "C:\\Program Files\\nodejs",
       "C:\\Program Files (x86)\\nodejs"
     ] : [
       // Unix paths (macOS/Linux)
+      ...nvmPaths,                                     // NVM node versions
       path.join(homedir, ".claude", "local", "bin"),  // Claude Code default
       path.join(homedir, ".local", "bin"),            // pip user install
       path.join(homedir, ".npm-global", "bin"),       // npm global
