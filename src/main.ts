@@ -1,40 +1,41 @@
 /**
- * Claudian - Obsidian plugin entry point
+ * ObsidianCode - Obsidian plugin entry point
  *
  * Registers the sidebar chat view, settings tab, and commands.
  * Manages conversation persistence and environment variable configuration.
  */
 
-import type { Editor,MarkdownView } from 'obsidian';
-import { Notice,Plugin } from 'obsidian';
+import type { Editor, MarkdownView } from 'obsidian';
+import { Notice, Plugin } from 'obsidian';
 
-import { ClaudianService } from './core/agent/ClaudianService';
+import { ObsidianCodeService } from './core/agent/ObsidianCodeService';
 import { deleteCachedImages } from './core/images/imageCache';
 import { StorageService } from './core/storage';
 import type {
-  ClaudianSettings,
+  ObsidianCodeSettings,
   Conversation,
-  ConversationMeta} from './core/types';
+  ConversationMeta
+} from './core/types';
 import {
   DEFAULT_CLAUDE_MODELS,
   DEFAULT_SETTINGS,
-  VIEW_TYPE_CLAUDIAN,
+  VIEW_TYPE_OBSIDIAN_CODE,
 } from './core/types';
-import { ClaudianView } from './features/chat/ClaudianView';
+import { ObsidianCodeView } from './features/chat/ObsidianCodeView';
 import { McpService } from './features/mcp/McpService';
-import { ClaudianSettingTab } from './features/settings/ClaudianSettings';
+import { ObsidianCodeSettingTab } from './features/settings/ObsidianCodeSettings';
 import { type InlineEditContext, InlineEditModal } from './ui/modals/InlineEditModal';
 import { ClaudeCliResolver } from './utils/claudeCli';
 import { buildCursorContext } from './utils/editor';
 import { getCurrentModelFromEnvironment, getModelsFromEnvironment, parseEnvironmentVariables } from './utils/env';
 
 /**
- * Main plugin class for Claudian.
+ * Main plugin class for ObsidianCode.
  * Handles plugin lifecycle, settings persistence, and conversation management.
  */
-export default class ClaudianPlugin extends Plugin {
-  settings: ClaudianSettings;
-  agentService: ClaudianService;
+export default class ObsidianCodePlugin extends Plugin {
+  settings: ObsidianCodeSettings;
+  agentService: ObsidianCodeService;
   mcpService: McpService;
   storage: StorageService;
   cliResolver: ClaudeCliResolver;
@@ -53,14 +54,14 @@ export default class ClaudianPlugin extends Plugin {
     await this.mcpService.loadServers();
 
     // Initialize agent service with the MCP manager
-    this.agentService = new ClaudianService(this, this.mcpService.getManager());
+    this.agentService = new ObsidianCodeService(this, this.mcpService.getManager());
 
     this.registerView(
-      VIEW_TYPE_CLAUDIAN,
-      (leaf) => new ClaudianView(leaf, this)
+      VIEW_TYPE_OBSIDIAN_CODE,
+      (leaf) => new ObsidianCodeView(leaf, this)
     );
 
-    this.addRibbonIcon('heart', 'Open cc-obsidian', () => {
+    this.addRibbonIcon('bot', 'Open cc-obsidian', () => {
       this.activateView();
     });
 
@@ -104,23 +105,23 @@ export default class ClaudianPlugin extends Plugin {
       },
     });
 
-    this.addSettingTab(new ClaudianSettingTab(this.app, this));
+    this.addSettingTab(new ObsidianCodeSettingTab(this.app, this));
   }
 
   onunload() {
     this.agentService.cleanup();
   }
 
-  /** Opens the Claudian sidebar view, creating it if necessary. */
+  /** Opens the ObsidianCode sidebar view, creating it if necessary. */
   async activateView() {
     const { workspace } = this.app;
-    let leaf = workspace.getLeavesOfType(VIEW_TYPE_CLAUDIAN)[0];
+    let leaf = workspace.getLeavesOfType(VIEW_TYPE_OBSIDIAN_CODE)[0];
 
     if (!leaf) {
       const rightLeaf = workspace.getRightLeaf(false);
       if (rightLeaf) {
         await rightLeaf.setViewState({
-          type: VIEW_TYPE_CLAUDIAN,
+          type: VIEW_TYPE_OBSIDIAN_CODE,
           active: true,
         });
         leaf = rightLeaf;
@@ -158,7 +159,7 @@ export default class ClaudianPlugin extends Plugin {
 
     // Validate active conversation exists
     if (this.activeConversationId &&
-        !this.conversations.find(c => c.id === this.activeConversationId)) {
+      !this.conversations.find(c => c.id === this.activeConversationId)) {
       this.activeConversationId = null;
     }
 
@@ -479,11 +480,11 @@ export default class ClaudianPlugin extends Plugin {
     }));
   }
 
-  /** Returns the active Claudian view from workspace, if open. */
-  getView(): ClaudianView | null {
-    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_CLAUDIAN);
+  /** Returns the active ObsidianCode view from workspace, if open. */
+  getView(): ObsidianCodeView | null {
+    const leaves = this.app.workspace.getLeavesOfType(VIEW_TYPE_OBSIDIAN_CODE);
     if (leaves.length > 0) {
-      return leaves[0].view as ClaudianView;
+      return leaves[0].view as ObsidianCodeView;
     }
     return null;
   }

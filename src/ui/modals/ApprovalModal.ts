@@ -1,5 +1,5 @@
 /**
- * Claudian - Approval modal for Safe mode tool permission prompts.
+ * ObsidianCode - Approval modal for Safe mode tool permission prompts.
  */
 
 import type { App } from 'obsidian';
@@ -42,32 +42,32 @@ export class ApprovalModal extends Modal {
 
   onOpen() {
     const { contentEl } = this;
-    contentEl.addClass('claudian-approval-modal');
+    contentEl.addClass('oc-approval-modal');
     this.setTitle(this.options.title ?? 'Permission required');
 
-    const infoEl = contentEl.createDiv({ cls: 'claudian-approval-info' });
+    const infoEl = contentEl.createDiv({ cls: 'oc-approval-info' });
 
-    const toolEl = infoEl.createDiv({ cls: 'claudian-approval-tool' });
-    const iconEl = toolEl.createSpan({ cls: 'claudian-approval-icon' });
+    const toolEl = infoEl.createDiv({ cls: 'oc-approval-tool' });
+    const iconEl = toolEl.createSpan({ cls: 'oc-approval-icon' });
     iconEl.setAttribute('aria-hidden', 'true');
     setIcon(iconEl, getToolIcon(this.toolName));
-    toolEl.createSpan({ text: this.toolName, cls: 'claudian-approval-tool-name' });
+    toolEl.createSpan({ text: this.toolName, cls: 'oc-approval-tool-name' });
 
-    const descEl = contentEl.createDiv({ cls: 'claudian-approval-desc' });
+    const descEl = contentEl.createDiv({ cls: 'oc-approval-desc' });
     descEl.setText(this.description);
 
-    const buttonsEl = contentEl.createDiv({ cls: 'claudian-approval-buttons' });
+    const buttonsEl = contentEl.createDiv({ cls: 'oc-approval-buttons' });
 
     const denyBtn = buttonsEl.createEl('button', {
       text: 'Deny',
-      cls: 'claudian-approval-btn claudian-deny-btn',
+      cls: 'oc-approval-btn oc-deny-btn',
       attr: { 'aria-label': `Deny ${this.toolName} action` }
     });
     denyBtn.addEventListener('click', () => this.handleDecision('deny'));
 
     const allowBtn = buttonsEl.createEl('button', {
       text: 'Allow once',
-      cls: 'claudian-approval-btn claudian-allow-btn',
+      cls: 'oc-approval-btn oc-allow-btn',
       attr: { 'aria-label': `Allow ${this.toolName} action once` }
     });
     allowBtn.addEventListener('click', () => this.handleDecision('allow'));
@@ -76,7 +76,7 @@ export class ApprovalModal extends Modal {
     if (this.options.showAlwaysAllow ?? true) {
       alwaysBtn = buttonsEl.createEl('button', {
         text: 'Always allow',
-        cls: 'claudian-approval-btn claudian-always-btn',
+        cls: 'oc-approval-btn oc-always-btn',
         attr: { 'aria-label': `Always allow ${this.toolName} actions` }
       });
       alwaysBtn.addEventListener('click', () => this.handleDecision('allow-always'));

@@ -1,10 +1,10 @@
 /* Tool call container - transparent, no border */
-.claudian-tool-call {
+.oc-tool-call {
   margin: 8px 0;
 }
 
 /* Tool call header - transparent */
-.claudian-tool-header {
+.oc-tool-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -12,19 +12,19 @@
   cursor: pointer;
 }
 
-.claudian-tool-icon {
+.oc-tool-icon {
   display: flex;
   align-items: center;
   color: var(--text-accent);
   flex-shrink: 0;
 }
 
-.claudian-tool-icon svg {
+.oc-tool-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.claudian-tool-label {
+.oc-tool-label {
   flex: 1;
   font-family: var(--font-monospace);
   font-size: 13px;
@@ -35,35 +35,35 @@
   text-overflow: ellipsis;
 }
 
-.claudian-tool-status {
+.oc-tool-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.claudian-tool-status svg {
+.oc-tool-status svg {
   width: 14px;
   height: 14px;
 }
 
-.claudian-tool-status.status-running {
+.oc-tool-status.status-running {
   color: var(--text-accent);
 }
 
-.claudian-tool-status.status-completed {
+.oc-tool-status.status-completed {
   color: var(--color-green);
 }
 
-.claudian-tool-status.status-error {
+.oc-tool-status.status-error {
   color: var(--color-red);
 }
 
-.claudian-tool-status.status-blocked {
+.oc-tool-status.status-blocked {
   color: var(--color-orange);
 }
 
 /* Spinner animation */
-.claudian-spinner {
+.oc-spinner {
   width: 14px;
   height: 14px;
   border: 2px solid var(--background-modifier-border);
@@ -73,25 +73,25 @@
 }
 
 /* Tool call content - tree-branch style */
-.claudian-tool-content {
+.oc-tool-content {
   padding: 4px 0 4px 24px;
 }
 
 /* Tree-branch result row */
-.claudian-tool-result-row {
+.oc-tool-result-row {
   display: flex;
   align-items: flex-start;
   gap: 4px;
 }
 
-.claudian-tool-branch {
+.oc-tool-branch {
   font-family: monospace;
   color: var(--text-faint);
   flex-shrink: 0;
   line-height: 1.4;
 }
 
-.claudian-tool-result-text {
+.oc-tool-result-text {
   font-family: var(--font-monospace);
   font-size: 12px;
   color: var(--text-muted);
@@ -102,23 +102,23 @@
 }
 
 /* Result items - regular text lines */
-.claudian-tool-result-item {
+.oc-tool-result-item {
   display: block;
   margin-bottom: 2px;
 }
 
-.claudian-tool-result-item:last-child {
+.oc-tool-result-item:last-child {
   margin-bottom: 0;
 }
 
 /* Bulleted items (WebSearch) - hanging indent for wrapped lines */
-.claudian-tool-result-bullet {
+.oc-tool-result-bullet {
   display: block;
   padding-left: 0.8em;
   text-indent: -0.8em;
   margin-bottom: 2px;
 }
 
-.claudian-tool-result-bullet:last-child {
+.oc-tool-result-bullet:last-child {
   margin-bottom: 0;
 }

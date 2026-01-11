@@ -8,7 +8,7 @@ import { type ChildProcess, spawn } from 'child_process';
 import * as http from 'http';
 import * as https from 'https';
 
-import type { ClaudianMcpServer } from '../../core/types';
+import type { ObsidianCodeMcpServer } from '../../core/types';
 import { getMcpServerType } from '../../core/types';
 import { getEnhancedPath } from '../../utils/env';
 import {
@@ -36,7 +36,7 @@ export interface McpTestResult {
 }
 
 /** Test an MCP server connection and retrieve its tools. */
-export async function testMcpServer(server: ClaudianMcpServer): Promise<McpTestResult> {
+export async function testMcpServer(server: ObsidianCodeMcpServer): Promise<McpTestResult> {
   const type = getMcpServerType(server.config);
 
   try {
@@ -57,7 +57,7 @@ export async function testMcpServer(server: ClaudianMcpServer): Promise<McpTestR
 }
 
 /** Test a stdio MCP server. */
-async function testStdioServer(server: ClaudianMcpServer): Promise<McpTestResult> {
+async function testStdioServer(server: ObsidianCodeMcpServer): Promise<McpTestResult> {
   const config = server.config as { command: string; args?: string[]; env?: Record<string, string> };
   const { cmd, args } = parseCommand(config.command, config.args);
 
@@ -251,7 +251,7 @@ async function testStdioServer(server: ClaudianMcpServer): Promise<McpTestResult
         params: {
           protocolVersion: '2024-11-05',
           capabilities: {},
-          clientInfo: { name: 'claudian-tester', version: '1.0.0' },
+          clientInfo: { name: 'oc-tester', version: '1.0.0' },
         },
       };
 
@@ -307,7 +307,7 @@ function httpRequest(
 }
 
 /** Test an HTTP MCP server. */
-async function testHttpServer(server: ClaudianMcpServer): Promise<McpTestResult> {
+async function testHttpServer(server: ObsidianCodeMcpServer): Promise<McpTestResult> {
   const config = server.config as { url: string; headers?: Record<string, string> };
 
   return new Promise((resolve) => {
@@ -337,7 +337,7 @@ async function testHttpServer(server: ClaudianMcpServer): Promise<McpTestResult>
           params: {
             protocolVersion: '2024-11-05',
             capabilities: {},
-            clientInfo: { name: 'claudian-tester', version: '1.0.0' },
+            clientInfo: { name: 'oc-tester', version: '1.0.0' },
           },
         });
 
@@ -441,7 +441,7 @@ async function testHttpServer(server: ClaudianMcpServer): Promise<McpTestResult>
 }
 
 /** Test an SSE MCP server. */
-async function testSseServer(server: ClaudianMcpServer): Promise<McpTestResult> {
+async function testSseServer(server: ObsidianCodeMcpServer): Promise<McpTestResult> {
   const config = server.config as { url: string; headers?: Record<string, string> };
   const controller = new AbortController();
   const timeout = setTimeout(() => controller.abort(), 10000);
@@ -519,7 +519,7 @@ async function testSseServer(server: ClaudianMcpServer): Promise<McpTestResult> 
       params: {
         protocolVersion: '2024-11-05',
         capabilities: {},
-        clientInfo: { name: 'claudian-tester', version: '1.0.0' },
+        clientInfo: { name: 'oc-tester', version: '1.0.0' },
       },
     };
 

@@ -1,5 +1,5 @@
 /**
- * Claudian - Environment snippet manager
+ * ObsidianCode - Environment snippet manager
  *
  * Manages saving and restoring environment variable configurations.
  */
@@ -8,15 +8,15 @@ import type { App} from 'obsidian';
 import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { EnvSnippet } from '../../core/types';
-import type ClaudianPlugin from '../../main';
+import type ObsidianCodePlugin from '../../main';
 
 /** Modal for creating/editing environment variable snippets. */
 export class EnvSnippetModal extends Modal {
-  plugin: ClaudianPlugin;
+  plugin: ObsidianCodePlugin;
   snippet: EnvSnippet | null;
   onSave: (snippet: EnvSnippet) => void;
 
-  constructor(app: App, plugin: ClaudianPlugin, snippet: EnvSnippet | null, onSave: (snippet: EnvSnippet) => void) {
+  constructor(app: App, plugin: ObsidianCodePlugin, snippet: EnvSnippet | null, onSave: (snippet: EnvSnippet) => void) {
     super(app);
     this.plugin = plugin;
     this.snippet = snippet;
@@ -28,7 +28,7 @@ export class EnvSnippetModal extends Modal {
     this.setTitle(this.snippet ? 'Edit snippet' : 'Save snippet');
 
     // Make modal more compact
-    this.modalEl.addClass('claudian-env-snippet-modal');
+    this.modalEl.addClass('oc-env-snippet-modal');
 
     let nameEl: HTMLInputElement;
     let descEl: HTMLInputElement;
@@ -92,21 +92,21 @@ export class EnvSnippetModal extends Modal {
         text.inputEl.rows = 8;
       });
     // Make textarea full width under the label
-    envVarsSetting.settingEl.addClass('claudian-env-snippet-setting');
-    envVarsSetting.controlEl.addClass('claudian-env-snippet-control');
+    envVarsSetting.settingEl.addClass('oc-env-snippet-setting');
+    envVarsSetting.controlEl.addClass('oc-env-snippet-control');
 
     // Compact button container
-    const buttonContainer = contentEl.createDiv({ cls: 'claudian-snippet-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'oc-snippet-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: 'Cancel',
-      cls: 'claudian-cancel-btn'
+      cls: 'oc-cancel-btn'
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: this.snippet ? 'Update' : 'Save',
-      cls: 'claudian-save-btn'
+      cls: 'oc-save-btn'
     });
     saveBtn.addEventListener('click', () => saveSnippet());
 
@@ -123,9 +123,9 @@ export class EnvSnippetModal extends Modal {
 /** Component for managing environment variable snippets. */
 export class EnvSnippetManager {
   private containerEl: HTMLElement;
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
 
-  constructor(containerEl: HTMLElement, plugin: ClaudianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: ObsidianCodePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.render();
@@ -135,11 +135,11 @@ export class EnvSnippetManager {
     this.containerEl.empty();
 
     // Header with save button
-    const headerEl = this.containerEl.createDiv({ cls: 'claudian-snippet-header' });
-    headerEl.createSpan({ text: 'Snippets', cls: 'claudian-snippet-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'oc-snippet-header' });
+    headerEl.createSpan({ text: 'Snippets', cls: 'oc-snippet-label' });
 
     const saveBtn = headerEl.createEl('button', {
-      cls: 'claudian-settings-action-btn',
+      cls: 'oc-settings-action-btn',
       attr: { 'aria-label': 'Save current' },
     });
     setIcon(saveBtn, 'plus');
@@ -148,7 +148,7 @@ export class EnvSnippetManager {
     const snippets = this.plugin.settings.envSnippets;
 
     if (snippets.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'claudian-snippet-empty' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'oc-snippet-empty' });
       emptyEl.setText('No saved environment snippets yet. Click "Save Current" to save your current environment configuration.');
       return;
     }
@@ -156,26 +156,26 @@ export class EnvSnippetManager {
     // Use snippets as-is (maintain creation order)
     const sortedSnippets = snippets;
 
-    const listEl = this.containerEl.createDiv({ cls: 'claudian-snippet-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'oc-snippet-list' });
 
     for (const snippet of sortedSnippets) {
-      const itemEl = listEl.createDiv({ cls: 'claudian-snippet-item' });
+      const itemEl = listEl.createDiv({ cls: 'oc-snippet-item' });
 
-      const infoEl = itemEl.createDiv({ cls: 'claudian-snippet-info' });
+      const infoEl = itemEl.createDiv({ cls: 'oc-snippet-info' });
 
-      const nameEl = infoEl.createDiv({ cls: 'claudian-snippet-name' });
+      const nameEl = infoEl.createDiv({ cls: 'oc-snippet-name' });
       nameEl.setText(snippet.name);
 
       if (snippet.description) {
-        const descEl = infoEl.createDiv({ cls: 'claudian-snippet-description' });
+        const descEl = infoEl.createDiv({ cls: 'oc-snippet-description' });
         descEl.setText(snippet.description);
       }
 
-      const actionsEl = itemEl.createDiv({ cls: 'claudian-snippet-actions' });
+      const actionsEl = itemEl.createDiv({ cls: 'oc-snippet-actions' });
 
       // Restore button
       const restoreBtn = actionsEl.createEl('button', {
-        cls: 'claudian-settings-action-btn',
+        cls: 'oc-settings-action-btn',
         attr: { 'aria-label': 'Insert' },
       });
       setIcon(restoreBtn, 'clipboard-paste');
@@ -185,7 +185,7 @@ export class EnvSnippetManager {
 
       // Edit button
       const editBtn = actionsEl.createEl('button', {
-        cls: 'claudian-settings-action-btn',
+        cls: 'oc-settings-action-btn',
         attr: { 'aria-label': 'Edit' },
       });
       setIcon(editBtn, 'pencil');
@@ -195,7 +195,7 @@ export class EnvSnippetManager {
 
       // Delete button
       const deleteBtn = actionsEl.createEl('button', {
-        cls: 'claudian-settings-action-btn claudian-settings-delete-btn',
+        cls: 'oc-settings-action-btn oc-settings-delete-btn',
         attr: { 'aria-label': 'Delete' },
       });
       setIcon(deleteBtn, 'trash-2');
@@ -224,7 +224,7 @@ export class EnvSnippetManager {
 
   private async insertSnippet(snippet: EnvSnippet) {
     // Insert the snippet's environment variables into the input field
-    const envTextarea = document.querySelector('.claudian-settings-env-textarea') as HTMLTextAreaElement;
+    const envTextarea = document.querySelector('.oc-settings-env-textarea') as HTMLTextAreaElement;
     if (envTextarea) {
       // Always clear and replace with snippet content
       const snippetContent = snippet.envVars.trim();
@@ -234,7 +234,7 @@ export class EnvSnippetManager {
       await this.plugin.applyEnvironmentVariables(snippetContent);
 
       // Trigger model selector refresh if it exists
-      const view = this.plugin.app.workspace.getLeavesOfType('claudian-view')[0]?.view as any;
+      const view = this.plugin.app.workspace.getLeavesOfType('oc-view')[0]?.view as any;
       if (view?.modelSelector) {
         view.modelSelector.updateDisplay();
         view.modelSelector.renderOptions();
@@ -246,7 +246,7 @@ export class EnvSnippetManager {
       this.render();
 
       // Trigger model selector refresh if it exists
-      const view = this.plugin.app.workspace.getLeavesOfType('claudian-view')[0]?.view as any;
+      const view = this.plugin.app.workspace.getLeavesOfType('oc-view')[0]?.view as any;
       if (view?.modelSelector) {
         view.modelSelector.updateDisplay();
         view.modelSelector.renderOptions();

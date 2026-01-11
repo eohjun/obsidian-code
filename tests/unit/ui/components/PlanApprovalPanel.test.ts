@@ -167,11 +167,11 @@ function createMockDocument() {
 function createContainer(document: any): MockElement {
   const container = document.createElement('div');
   const inputContainer = document.createElement('div');
-  inputContainer.className = 'claudian-input-container';
+  inputContainer.className = 'oc-input-container';
   const inputWrapper = document.createElement('div');
-  inputWrapper.className = 'claudian-input-wrapper';
+  inputWrapper.className = 'oc-input-wrapper';
   const thinking = document.createElement('div');
-  thinking.className = 'claudian-thinking';
+  thinking.className = 'oc-thinking';
   inputContainer.appendChild(inputWrapper);
   container.appendChild(inputContainer);
   container.appendChild(thinking);
@@ -200,8 +200,8 @@ describe('PlanApprovalPanel', () => {
       onCancel,
     });
 
-    const reviseInput = containerEl.querySelector('.claudian-plan-approval-revise-inline') as any;
-    const option1 = containerEl.querySelector('.claudian-plan-approval-option[data-option-index="1"]') as any;
+    const reviseInput = containerEl.querySelector('.oc-plan-approval-revise-inline') as any;
+    const option1 = containerEl.querySelector('.oc-plan-approval-option[data-option-index="1"]') as any;
 
     expect(reviseInput).toBeTruthy();
     expect(option1).toBeTruthy();

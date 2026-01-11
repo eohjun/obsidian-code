@@ -1,5 +1,5 @@
 /**
- * Claudian - Inline edit service
+ * ObsidianCode - Inline edit service
  *
  * Lightweight Claude query service for inline text editing.
  * Uses read-only tools only and supports multi-turn clarification.
@@ -19,7 +19,7 @@ import {
   TOOL_READ,
 } from '../../core/tools/toolNames';
 import { THINKING_BUDGETS } from '../../core/types';
-import type ClaudianPlugin from '../../main';
+import type ObsidianCodePlugin from '../../main';
 import { prependContextFiles } from '../../utils/context';
 import { type CursorContext } from '../../utils/editor';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../utils/env';
@@ -57,11 +57,11 @@ export interface InlineEditResult {
 
 /** Service for inline text editing with Claude using read-only tools. */
 export class InlineEditService {
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
   private abortController: AbortController | null = null;
   private sessionId: string | null = null;
 
-  constructor(plugin: ClaudianPlugin) {
+  constructor(plugin: ObsidianCodePlugin) {
     this.plugin = plugin;
   }
 

@@ -1,37 +1,37 @@
 /* Header */
-.claudian-header {
+.oc-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
   padding: 0 12px 12px 12px;
 }
 
-.claudian-title {
+.oc-title {
   display: flex;
   align-items: center;
   gap: 8px;
 }
 
-.claudian-logo {
+.oc-logo {
   display: flex;
   align-items: center;
 }
 
-.claudian-header h4 {
+.oc-header h4 {
   margin: 0;
   font-size: 14px;
   font-weight: 600;
 }
 
 /* Header actions (right side) */
-.claudian-header-actions {
+.oc-header-actions {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
 /* Header icon buttons (history, new, etc.) */
-.claudian-header-btn {
+.oc-header-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -42,12 +42,12 @@
   transition: background 0.15s ease, color 0.15s ease;
 }
 
-.claudian-header-btn:hover {
+.oc-header-btn:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.claudian-header-btn svg {
+.oc-header-btn svg {
   width: 16px;
   height: 16px;
 }

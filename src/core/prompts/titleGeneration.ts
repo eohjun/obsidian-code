@@ -1,5 +1,5 @@
 /**
- * Claudian - Title Generation System Prompt
+ * ObsidianCode - Title Generation System Prompt
  *
  * System prompt for generating conversation titles.
  */

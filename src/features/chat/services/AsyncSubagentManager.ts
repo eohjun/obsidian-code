@@ -1,5 +1,5 @@
 /**
- * Claudian - Async subagent lifecycle manager
+ * ObsidianCode - Async subagent lifecycle manager
  *
  * Manages background Task tool execution using a two-tool transaction model:
  * Task tool_use → agent_id → AgentOutputTool → completed/error/orphaned.

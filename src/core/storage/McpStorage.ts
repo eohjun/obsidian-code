@@ -2,14 +2,14 @@
  * McpStorage - Handles .claude/mcp.json read/write
  *
  * MCP server configurations are stored in Claude Code-compatible format
- * with optional Claudian-specific metadata in _claudian field.
+ * with optional ObsidianCode-specific metadata in _obsidianCode field.
  *
  * File format:
  * {
  *   "mcpServers": {
  *     "server-name": { "command": "...", "args": [...] }
  *   },
- *   "_claudian": {
+ *   "_obsidianCode": {
  *     "servers": {
  *       "server-name": { "enabled": true, "contextSaving": true, "disabledTools": ["tool"], "description": "..." }
  *     }
@@ -18,8 +18,8 @@
  */
 
 import type {
-  ClaudianMcpConfigFile,
-  ClaudianMcpServer,
+  ObsidianCodeMcpConfigFile,
+  ObsidianCodeMcpServer,
   McpServerConfig,
   ParsedMcpConfig,
 } from '../types';
@@ -33,29 +33,29 @@ export class McpStorage {
   constructor(private adapter: VaultFileAdapter) {}
 
   /** Load MCP servers from .claude/mcp.json. */
-  async load(): Promise<ClaudianMcpServer[]> {
+  async load(): Promise<ObsidianCodeMcpServer[]> {
     try {
       if (!(await this.adapter.exists(MCP_CONFIG_PATH))) {
         return [];
       }
 
       const content = await this.adapter.read(MCP_CONFIG_PATH);
-      const file = JSON.parse(content) as ClaudianMcpConfigFile;
+      const file = JSON.parse(content) as ObsidianCodeMcpConfigFile;
 
       if (!file.mcpServers || typeof file.mcpServers !== 'object') {
         return [];
       }
 
-      const claudianMeta = file._claudian?.servers ?? {};
-      const servers: ClaudianMcpServer[] = [];
+      const obsidianCodeMeta = file._obsidianCode?.servers ?? {};
+      const servers: ObsidianCodeMcpServer[] = [];
 
       for (const [name, config] of Object.entries(file.mcpServers)) {
         if (!isValidMcpServerConfig(config)) {
-          console.warn(`[Claudian] Invalid MCP server config for "${name}", skipping`);
+          console.warn(`[ObsidianCode] Invalid MCP server config for "${name}", skipping`);
           continue;
         }
 
-        const meta = claudianMeta[name] ?? {};
+        const meta = obsidianCodeMeta[name] ?? {};
         const disabledTools = Array.isArray(meta.disabledTools)
           ? meta.disabledTools.filter((tool) => typeof tool === 'string')
           : undefined;
@@ -74,16 +74,16 @@ export class McpStorage {
 
       return servers;
     } catch (error) {
-      console.error('[Claudian] Failed to load MCP config:', error);
+      console.error('[ObsidianCode] Failed to load MCP config:', error);
       return [];
     }
   }
 
   /** Save MCP servers to .claude/mcp.json. */
-  async save(servers: ClaudianMcpServer[]): Promise<void> {
+  async save(servers: ObsidianCodeMcpServer[]): Promise<void> {
     try {
       const mcpServers: Record<string, McpServerConfig> = {};
-      const claudianServers: Record<
+      const obsidianCodeServers: Record<
         string,
         { enabled?: boolean; contextSaving?: boolean; disabledTools?: string[]; description?: string }
       > = {};
@@ -91,7 +91,7 @@ export class McpStorage {
       for (const server of servers) {
         mcpServers[server.name] = server.config;
 
-        // Only store Claudian metadata if different from defaults
+        // Only store ObsidianCode metadata if different from defaults
         const meta: {
           enabled?: boolean;
           contextSaving?: boolean;
@@ -116,7 +116,7 @@ export class McpStorage {
         }
 
         if (Object.keys(meta).length > 0) {
-          claudianServers[server.name] = meta;
+          obsidianCodeServers[server.name] = meta;
         }
       }
 
@@ -136,28 +136,28 @@ export class McpStorage {
       const file: Record<string, unknown> = existing ? { ...existing } : {};
       file.mcpServers = mcpServers;
 
-      const existingClaudian =
-        existing && typeof existing._claudian === 'object'
-          ? (existing._claudian as Record<string, unknown>)
+      const existingObsidianCode =
+        existing && typeof existing._obsidianCode === 'object'
+          ? (existing._obsidianCode as Record<string, unknown>)
           : null;
 
-      if (Object.keys(claudianServers).length > 0) {
-        file._claudian = { ...(existingClaudian ?? {}), servers: claudianServers };
-      } else if (existingClaudian) {
-        const { servers: _servers, ...rest } = existingClaudian;
+      if (Object.keys(obsidianCodeServers).length > 0) {
+        file._obsidianCode = { ...(existingObsidianCode ?? {}), servers: obsidianCodeServers };
+      } else if (existingObsidianCode) {
+        const { servers: _servers, ...rest } = existingObsidianCode;
         if (Object.keys(rest).length > 0) {
-          file._claudian = rest;
+          file._obsidianCode = rest;
         } else {
-          delete file._claudian;
+          delete file._obsidianCode;
         }
       } else {
-        delete file._claudian;
+        delete file._obsidianCode;
       }
 
       const content = JSON.stringify(file, null, 2);
       await this.adapter.write(MCP_CONFIG_PATH, content);
     } catch (error) {
-      console.error('[Claudian] Failed to save MCP config:', error);
+      console.error('[ObsidianCode] Failed to save MCP config:', error);
       throw error;
     }
   }

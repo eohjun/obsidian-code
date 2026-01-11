@@ -8,13 +8,13 @@
 import type { Component } from 'obsidian';
 import { Notice } from 'obsidian';
 
-import type { ExitPlanModeDecision } from '../../../core/agent/ClaudianService';
+import type { ExitPlanModeDecision } from '../../../core/agent/ObsidianCodeService';
 import type { SlashCommandManager } from '../../../core/commands';
 import { isCommandBlocked } from '../../../core/security/BlocklistChecker';
 import { TOOL_BASH } from '../../../core/tools/toolNames';
 import type { AskUserQuestionInput, ChatMessage, ImageAttachment } from '../../../core/types';
 import { getBashToolBlockedCommands } from '../../../core/types';
-import type ClaudianPlugin from '../../../main';
+import type ObsidianCodePlugin from '../../../main';
 import {
   ApprovalModal,
   type FileContextManager,
@@ -44,7 +44,7 @@ const PLAN_MODE_REQUEST_PREFIX =
 
 /** Dependencies for InputController. */
 export interface InputControllerDeps {
-  plugin: ClaudianPlugin;
+  plugin: ObsidianCodePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   streamController: StreamController;
@@ -276,7 +276,7 @@ export class InputController {
     };
     state.addMessage(assistantMsg);
     const msgEl = renderer.addMessage(assistantMsg);
-    const contentEl = msgEl.querySelector('.claudian-message-content') as HTMLElement;
+    const contentEl = msgEl.querySelector('.oc-message-content') as HTMLElement;
 
     state.toolCallElements.clear();
     state.currentContentEl = contentEl;
@@ -325,7 +325,7 @@ export class InputController {
       await streamController.appendText(`\n\n**Error:** ${errorMsg}`);
     } finally {
       if (wasInterrupted) {
-        await streamController.appendText('\n\n<span class="claudian-interrupted">Interrupted</span> <span class="claudian-interrupted-hint">· What should Claudian do instead?</span>');
+        await streamController.appendText('\n\n<span class="oc-interrupted">Interrupted</span> <span class="oc-interrupted-hint">· What should ObsidianCode do instead?</span>');
       }
       streamController.hideThinkingIndicator();
       state.isStreaming = false;
@@ -571,7 +571,7 @@ ${content}
     };
     state.addMessage(assistantMsg);
     const msgEl = renderer.addMessage(assistantMsg);
-    const contentEl = msgEl.querySelector('.claudian-message-content') as HTMLElement;
+    const contentEl = msgEl.querySelector('.oc-message-content') as HTMLElement;
 
     state.toolCallElements.clear();
     state.currentContentEl = contentEl;
@@ -609,7 +609,7 @@ ${content}
       await streamController.appendText(`\n\n**Error:** ${errorMsg}`);
     } finally {
       if (wasInterrupted) {
-        await streamController.appendText('\n\n<span class="claudian-interrupted">Plan mode interrupted</span>');
+        await streamController.appendText('\n\n<span class="oc-interrupted">Plan mode interrupted</span>');
         plugin.agentService.setCurrentPlanFilePath(null);
       }
       streamController.hideThinkingIndicator();
@@ -930,7 +930,7 @@ ${content}
   async handleAskUserQuestion(input: AskUserQuestionInput): Promise<Record<string, string | string[]> | null> {
     const { plugin } = this.deps;
 
-    // Get the container element (the claudian view container)
+    // Get the container element (the ObsidianCode view container)
     const messagesEl = this.deps.getMessagesEl();
     const containerEl = messagesEl.parentElement;
     if (!containerEl) {
@@ -948,7 +948,7 @@ ${content}
   async handleExitPlanMode(planContent: string): Promise<ExitPlanModeDecision> {
     const { state, renderer, conversationController, streamController } = this.deps;
 
-    // Get the container element (the claudian view container)
+    // Get the container element (the ObsidianCode view container)
     const messagesEl = this.deps.getMessagesEl();
     const containerEl = messagesEl.parentElement;
     if (!containerEl) {
@@ -978,10 +978,10 @@ ${content}
     // Render the plan content with special styling
     const lastMsgEl = messagesEl.lastElementChild;
     if (lastMsgEl) {
-      lastMsgEl.classList.add('claudian-message-plan');
-      const contentEl = lastMsgEl.querySelector('.claudian-message-content') as HTMLElement;
+      lastMsgEl.classList.add('oc-message-plan');
+      const contentEl = lastMsgEl.querySelector('.oc-message-content') as HTMLElement;
       if (contentEl) {
-        const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
+        const textEl = contentEl.createDiv({ cls: 'oc-text-block' });
         await renderer.renderContent(textEl, planContent);
         // Update currentContentEl to point to the plan message's content.
         // This ensures that if revision is selected and the stream continues,

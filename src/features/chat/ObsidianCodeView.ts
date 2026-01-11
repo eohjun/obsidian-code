@@ -1,5 +1,5 @@
 /**
- * Claudian - Sidebar chat view
+ * ObsidianCode - Sidebar chat view
  *
  * Main chat interface for interacting with Claude. This is a thin shell that
  * delegates to specialized controllers for different concerns.
@@ -10,8 +10,8 @@ import { ItemView, setIcon } from 'obsidian';
 
 import { SlashCommandManager } from '../../core/commands';
 import type { ClaudeModel, ThinkingBudget } from '../../core/types';
-import { DEFAULT_CLAUDE_MODELS, DEFAULT_THINKING_BUDGET, VIEW_TYPE_CLAUDIAN } from '../../core/types';
-import type ClaudianPlugin from '../../main';
+import { DEFAULT_CLAUDE_MODELS, DEFAULT_THINKING_BUDGET, VIEW_TYPE_OBSIDIAN_CODE } from '../../core/types';
+import type ObsidianCodePlugin from '../../main';
 import {
   cleanupThinkingBlock,
   type ContextUsageMeter,
@@ -45,8 +45,8 @@ import { TitleGenerationService } from './services/TitleGenerationService';
 import { ChatState } from './state';
 
 /** Main sidebar chat view for interacting with Claude. */
-export class ClaudianView extends ItemView {
-  private plugin: ClaudianPlugin;
+export class ObsidianCodeView extends ItemView {
+  private plugin: ObsidianCodePlugin;
 
   // State - public for test access
   public readonly state: ChatState;
@@ -89,7 +89,7 @@ export class ClaudianView extends ItemView {
   private planBanner: PlanBanner | null = null;
   private todoPanel: TodoPanel | null = null;
 
-  constructor(leaf: WorkspaceLeaf, plugin: ClaudianPlugin) {
+  constructor(leaf: WorkspaceLeaf, plugin: ObsidianCodePlugin) {
     super(leaf);
     this.plugin = plugin;
     this.state = new ChatState({
@@ -102,7 +102,7 @@ export class ClaudianView extends ItemView {
   }
 
   getViewType(): string {
-    return VIEW_TYPE_CLAUDIAN;
+    return VIEW_TYPE_OBSIDIAN_CODE;
   }
 
   getDisplayText(): string {
@@ -116,10 +116,10 @@ export class ClaudianView extends ItemView {
   async onOpen() {
     const container = this.containerEl.children[1] as HTMLElement;
     container.empty();
-    container.addClass('claudian-container');
+    container.addClass('oc-container');
 
     // Build header
-    const header = container.createDiv({ cls: 'claudian-header' });
+    const header = container.createDiv({ cls: 'oc-header' });
     this.buildHeader(header);
 
     // Create plan banner (mounted to container, inserts before messages)
@@ -130,17 +130,17 @@ export class ClaudianView extends ItemView {
     this.planBanner.mount(container);
 
     // Build messages area
-    this.messagesEl = container.createDiv({ cls: 'claudian-messages' });
+    this.messagesEl = container.createDiv({ cls: 'oc-messages' });
 
     // Welcome message
-    this.welcomeEl = this.messagesEl.createDiv({ cls: 'claudian-welcome' });
+    this.welcomeEl = this.messagesEl.createDiv({ cls: 'oc-welcome' });
 
     // Create todo panel (mounts to messages area, shows at bottom)
     this.todoPanel = new TodoPanel();
     this.todoPanel.mount(this.messagesEl);
 
     // Build input area
-    const inputContainerEl = container.createDiv({ cls: 'claudian-input-container' });
+    const inputContainerEl = container.createDiv({ cls: 'oc-input-container' });
     this.buildInputArea(inputContainerEl);
 
     // Initialize renderer
@@ -206,8 +206,8 @@ export class ClaudianView extends ItemView {
   // ============================================
 
   private buildHeader(header: HTMLElement) {
-    const titleContainer = header.createDiv({ cls: 'claudian-title' });
-    const logoEl = titleContainer.createSpan({ cls: 'claudian-logo' });
+    const titleContainer = header.createDiv({ cls: 'oc-title' });
+    const logoEl = titleContainer.createSpan({ cls: 'oc-logo' });
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', LOGO_SVG.viewBox);
     svg.setAttribute('width', LOGO_SVG.width);
@@ -220,15 +220,15 @@ export class ClaudianView extends ItemView {
     logoEl.appendChild(svg);
     titleContainer.createEl('h4', { text: 'CC-Obsidian' });
 
-    const headerActions = header.createDiv({ cls: 'claudian-header-actions' });
+    const headerActions = header.createDiv({ cls: 'oc-header-actions' });
 
     // History dropdown
-    const historyContainer = headerActions.createDiv({ cls: 'claudian-history-container' });
-    const trigger = historyContainer.createDiv({ cls: 'claudian-header-btn' });
+    const historyContainer = headerActions.createDiv({ cls: 'oc-history-container' });
+    const trigger = historyContainer.createDiv({ cls: 'oc-header-btn' });
     setIcon(trigger, 'history');
     trigger.setAttribute('aria-label', 'Chat history');
 
-    this.historyDropdown = historyContainer.createDiv({ cls: 'claudian-history-menu' });
+    this.historyDropdown = historyContainer.createDiv({ cls: 'oc-history-menu' });
 
     trigger.addEventListener('click', (e) => {
       e.stopPropagation();
@@ -236,22 +236,22 @@ export class ClaudianView extends ItemView {
     });
 
     // New conversation button
-    const newBtn = headerActions.createDiv({ cls: 'claudian-header-btn' });
+    const newBtn = headerActions.createDiv({ cls: 'oc-header-btn' });
     setIcon(newBtn, 'plus');
     newBtn.setAttribute('aria-label', 'New conversation');
     newBtn.addEventListener('click', () => this.conversationController?.createNew());
   }
 
   private buildInputArea(inputContainerEl: HTMLElement) {
-    this.inputWrapper = inputContainerEl.createDiv({ cls: 'claudian-input-wrapper' });
+    this.inputWrapper = inputContainerEl.createDiv({ cls: 'oc-input-wrapper' });
 
     // Selection indicator
-    this.selectionIndicatorEl = this.inputWrapper.createDiv({ cls: 'claudian-selection-indicator' });
+    this.selectionIndicatorEl = this.inputWrapper.createDiv({ cls: 'oc-selection-indicator' });
     this.selectionIndicatorEl.style.display = 'none';
 
     // Input textarea
     this.inputEl = this.inputWrapper.createEl('textarea', {
-      cls: 'claudian-input',
+      cls: 'oc-input',
       attr: {
         placeholder: 'How can I help you today?',
         rows: '3',
@@ -312,7 +312,7 @@ export class ClaudianView extends ItemView {
     );
 
     // Input toolbar
-    const inputToolbar = this.inputWrapper.createDiv({ cls: 'claudian-input-toolbar' });
+    const inputToolbar = this.inputWrapper.createDiv({ cls: 'oc-input-toolbar' });
     const toolbarComponents = createInputToolbar(inputToolbar, {
       getSettings: () => ({
         model: this.plugin.settings.model,

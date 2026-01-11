@@ -1,4 +1,4 @@
-/** Claudian UI components - barrel export. */
+/** ObsidianCode UI components - barrel export. */
 
 // Re-export from subdirectories
 export * from './components';

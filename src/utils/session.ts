@@ -1,5 +1,5 @@
 /**
- * Claudian - Session Utilities
+ * ObsidianCode - Session Utilities
  *
  * Session recovery and history reconstruction.
  */

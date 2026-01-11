@@ -7,7 +7,7 @@
 
 import { isPlanModeTool, isWriteEditTool, TOOL_AGENT_OUTPUT, TOOL_ASK_USER_QUESTION, TOOL_TASK, TOOL_TODO_WRITE } from '../../../core/tools/toolNames';
 import type { ChatMessage, StreamChunk, SubagentInfo, ToolCallInfo } from '../../../core/types';
-import type ClaudianPlugin from '../../../main';
+import type ObsidianCodePlugin from '../../../main';
 import {
   addSubagentToolCall,
   appendThinkingContent,
@@ -41,7 +41,7 @@ import type { ChatState } from '../state/ChatState';
 
 /** Dependencies for StreamController. */
 export interface StreamControllerDeps {
-  plugin: ClaudianPlugin;
+  plugin: ObsidianCodePlugin;
   state: ChatState;
   renderer: MessageRenderer;
   asyncSubagentManager: AsyncSubagentManager;
@@ -307,7 +307,7 @@ export class StreamController {
         existingToolCall.result = chunk.content;
       }
 
-      // Get answers from stored map (set by ClaudianService callback)
+      // Get answers from stored map (set by ObsidianCodeService callback)
       const storedAnswers = plugin.agentService.getAskUserQuestionAnswers(chunk.id);
       const parsed = existingToolCall ? parseAskUserQuestionInput(existingToolCall.input) : null;
 
@@ -375,7 +375,7 @@ export class StreamController {
     if (!state.currentContentEl) return;
 
     if (!state.currentTextEl) {
-      state.currentTextEl = state.currentContentEl.createDiv({ cls: 'claudian-text-block' });
+      state.currentTextEl = state.currentContentEl.createDiv({ cls: 'oc-text-block' });
       state.currentTextContent = '';
     }
 
@@ -681,13 +681,13 @@ export class StreamController {
       return;
     }
 
-    state.thinkingEl = parentEl.createDiv({ cls: 'claudian-thinking' });
+    state.thinkingEl = parentEl.createDiv({ cls: 'oc-thinking' });
     const randomText = FLAVOR_TEXTS[Math.floor(Math.random() * FLAVOR_TEXTS.length)];
     state.thinkingEl.createSpan({ text: randomText });
-    state.thinkingEl.createSpan({ text: ' (esc to interrupt)', cls: 'claudian-thinking-hint' });
+    state.thinkingEl.createSpan({ text: ' (esc to interrupt)', cls: 'oc-thinking-hint' });
 
     // Queue indicator line (initially hidden)
-    state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'claudian-queue-indicator' });
+    state.queueIndicatorEl = state.thinkingEl.createDiv({ cls: 'oc-queue-indicator' });
     this.deps.updateQueueIndicator();
   }
 

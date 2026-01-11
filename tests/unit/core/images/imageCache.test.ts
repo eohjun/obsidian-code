@@ -16,7 +16,7 @@ function createMockApp(vaultPath: string) {
 }
 
 function createTempVault() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'claudian-vault-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-vault-'));
   return dir;
 }
 
@@ -38,7 +38,7 @@ describe('imageCache', () => {
     const mediaType: ImageMediaType = 'image/png';
 
     const dir = ensureImageCacheDir(app);
-    expect(dir).toBe(path.join(vaultPath, '.claudian-cache', 'images'));
+    expect(dir).toBe(path.join(vaultPath, '.oc-cache', 'images'));
 
     const first = saveImageToCache(app, buffer, mediaType, 'pic.png');
     const second = saveImageToCache(app, buffer, mediaType, 'other.png');
@@ -71,7 +71,7 @@ describe('imageCache', () => {
   });
 
   it('blocks cache path traversal outside cache root', () => {
-    const abs = getCacheAbsolutePath(app, '.claudian-cache/images/../evil.png');
+    const abs = getCacheAbsolutePath(app, '.oc-cache/images/../evil.png');
     expect(abs).toBeNull();
   });
 
@@ -87,8 +87,8 @@ describe('imageCache', () => {
 
     expect(ensureImageCacheDir(noVaultApp)).toBeNull();
     expect(saveImageToCache(noVaultApp, Buffer.from('x'), 'image/png')).toBeNull();
-    expect(readCachedImageBase64(noVaultApp, '.claudian-cache/images/a.png')).toBeNull();
-    expect(getCacheAbsolutePath(noVaultApp, '.claudian-cache/images/a.png')).toBeNull();
+    expect(readCachedImageBase64(noVaultApp, '.oc-cache/images/a.png')).toBeNull();
+    expect(getCacheAbsolutePath(noVaultApp, '.oc-cache/images/a.png')).toBeNull();
   });
 
   it('rejects invalid cache-relative paths', () => {

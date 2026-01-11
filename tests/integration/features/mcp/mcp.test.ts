@@ -11,7 +11,7 @@ import { ReadableStream } from 'stream/web';
 
 import { MCP_CONFIG_PATH, McpStorage } from '@/core/storage/McpStorage';
 import type {
-  ClaudianMcpServer,
+  ObsidianCodeMcpServer,
   McpHttpServerConfig,
   McpServerConfig,
   McpSSEServerConfig,
@@ -335,12 +335,12 @@ describe('McpStorage', () => {
   });
 
   describe('load/save', () => {
-    it('should preserve unknown top-level keys and merge _claudian', async () => {
+    it('should preserve unknown top-level keys and merge _obsidianCode', async () => {
       const initial = {
         mcpServers: {
           legacy: { command: 'node' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             legacy: { enabled: false },
           },
@@ -350,7 +350,7 @@ describe('McpStorage', () => {
       };
       const { storage, files } = createMemoryStorage(initial);
 
-      const servers: ClaudianMcpServer[] = [
+      const servers: ObsidianCodeMcpServer[] = [
         {
           name: 'new-server',
           config: {
@@ -375,7 +375,7 @@ describe('McpStorage', () => {
           headers: { Authorization: 'Bearer token' },
         },
       });
-      expect(saved._claudian).toEqual({
+      expect(saved._obsidianCode).toEqual({
         extra: { keep: true },
         servers: {
           'new-server': {
@@ -387,18 +387,18 @@ describe('McpStorage', () => {
       });
     });
 
-    it('should keep existing _claudian fields when metadata is defaulted', async () => {
+    it('should keep existing _obsidianCode fields when metadata is defaulted', async () => {
       const initial = {
         mcpServers: {
           legacy: { command: 'node' },
         },
-        _claudian: {
+        _obsidianCode: {
           extra: { keep: true },
         },
       };
       const { storage, files } = createMemoryStorage(initial);
 
-      const servers: ClaudianMcpServer[] = [
+      const servers: ObsidianCodeMcpServer[] = [
         {
           name: 'default-meta',
           config: { command: 'npx' },
@@ -410,7 +410,7 @@ describe('McpStorage', () => {
       await storage.save(servers);
 
       const saved = JSON.parse(files.get(MCP_CONFIG_PATH) || '{}') as Record<string, unknown>;
-      expect(saved._claudian).toEqual({ extra: { keep: true } });
+      expect(saved._obsidianCode).toEqual({ extra: { keep: true } });
       expect(saved.mcpServers).toEqual({ 'default-meta': { command: 'npx' } });
     });
 
@@ -420,7 +420,7 @@ describe('McpStorage', () => {
           stdio: { command: 'npx' },
           remote: { type: 'sse', url: 'http://localhost:3000/sse' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             stdio: { enabled: false, contextSaving: false, description: 'Local tools' },
           },
@@ -449,7 +449,7 @@ describe('McpStorage', () => {
           valid: { command: 'npx' },
           invalid: { foo: 'bar' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             invalid: { enabled: false },
           },
@@ -457,7 +457,7 @@ describe('McpStorage', () => {
       };
       const { storage } = createMemoryStorage(initial);
 
-      let servers: ClaudianMcpServer[] = [];
+      let servers: ObsidianCodeMcpServer[] = [];
       try {
         servers = await storage.load();
         expect(warnSpy).toHaveBeenCalledWith(
@@ -473,12 +473,12 @@ describe('McpStorage', () => {
       expect(servers[0].contextSaving).toBe(true);
     });
 
-    it('should remove _claudian when only servers metadata exists', async () => {
+    it('should remove _obsidianCode when only servers metadata exists', async () => {
       const initial = {
         mcpServers: {
           legacy: { command: 'node' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             legacy: { enabled: false },
           },
@@ -486,7 +486,7 @@ describe('McpStorage', () => {
       };
       const { storage, files } = createMemoryStorage(initial);
 
-      const servers: ClaudianMcpServer[] = [
+      const servers: ObsidianCodeMcpServer[] = [
         {
           name: 'legacy',
           config: { command: 'node' },
@@ -498,7 +498,7 @@ describe('McpStorage', () => {
       await storage.save(servers);
 
       const saved = JSON.parse(files.get(MCP_CONFIG_PATH) || '{}') as Record<string, unknown>;
-      expect(saved._claudian).toBeUndefined();
+      expect(saved._obsidianCode).toBeUndefined();
     });
   });
 });
@@ -889,7 +889,7 @@ describe('McpTester', () => {
   it('should test stdio server and return tools', async () => {
     const child = createMockChildProcess();
     const spawnSpy = jest.spyOn(childProcess, 'spawn').mockReturnValue(child as any);
-    const server: ClaudianMcpServer = {
+    const server: ObsidianCodeMcpServer = {
       name: 'local',
       config: { command: 'node', args: ['server'] },
       enabled: true,
@@ -937,7 +937,7 @@ describe('McpTester', () => {
     const spawnSpy = jest.spyOn(childProcess, 'spawn').mockImplementation(() => {
       throw new Error('spawn should not be called');
     });
-    const server: ClaudianMcpServer = {
+    const server: ObsidianCodeMcpServer = {
       name: 'missing',
       config: { command: '' },
       enabled: true,
@@ -963,7 +963,7 @@ describe('McpTester', () => {
         body: JSON.stringify({ result: { tools: [{ name: 'tool-b' }] } }),
       },
     ]);
-    const server: ClaudianMcpServer = {
+    const server: ObsidianCodeMcpServer = {
       name: 'http',
       config: { type: 'http', url: 'http://localhost:3000/mcp', headers: { Authorization: 'token' } },
       enabled: true,
@@ -989,7 +989,7 @@ describe('McpTester', () => {
         body: JSON.stringify({ error: { message: 'init failed' } }),
       },
     ]);
-    const server: ClaudianMcpServer = {
+    const server: ObsidianCodeMcpServer = {
       name: 'http',
       config: { type: 'http', url: 'http://localhost:3000/mcp' },
       enabled: true,
@@ -1046,7 +1046,7 @@ describe('McpTester', () => {
     globalThis.fetch = fetchMock as any;
 
     try {
-      const server: ClaudianMcpServer = {
+      const server: ObsidianCodeMcpServer = {
         name: 'sse',
         config: { type: 'sse', url: 'http://localhost:3000/sse' },
         enabled: true,
@@ -1075,7 +1075,7 @@ describe('McpTester', () => {
 // ============================================================================
 
 describe('McpService', () => {
-  function createService(servers: ClaudianMcpServer[]): McpService {
+  function createService(servers: ObsidianCodeMcpServer[]): McpService {
     const mockPlugin = {
       storage: {
         mcp: {
@@ -1090,7 +1090,7 @@ describe('McpService', () => {
   }
 
   describe('getActiveServers', () => {
-    const servers: ClaudianMcpServer[] = [
+    const servers: ObsidianCodeMcpServer[] = [
       {
         name: 'always-on',
         config: { command: 'server1' },
@@ -1149,7 +1149,7 @@ describe('McpService', () => {
     });
 
     it('should return empty object for all disabled servers', () => {
-      const disabledServers: ClaudianMcpServer[] = [
+      const disabledServers: ObsidianCodeMcpServer[] = [
         { name: 's1', config: { command: 'c1' }, enabled: false, contextSaving: false },
         { name: 's2', config: { command: 'c2' }, enabled: false, contextSaving: true },
       ];
@@ -1162,7 +1162,7 @@ describe('McpService', () => {
   });
 
   describe('isValidMcpMention', () => {
-    const servers: ClaudianMcpServer[] = [
+    const servers: ObsidianCodeMcpServer[] = [
       { name: 'enabled-context', config: { command: 'c1' }, enabled: true, contextSaving: true },
       { name: 'enabled-no-context', config: { command: 'c2' }, enabled: true, contextSaving: false },
       { name: 'disabled-context', config: { command: 'c3' }, enabled: false, contextSaving: true },
@@ -1190,7 +1190,7 @@ describe('McpService', () => {
   });
 
   describe('getContextSavingServers', () => {
-    const servers: ClaudianMcpServer[] = [
+    const servers: ObsidianCodeMcpServer[] = [
       { name: 's1', config: { command: 'c1' }, enabled: true, contextSaving: true },
       { name: 's2', config: { command: 'c2' }, enabled: true, contextSaving: false },
       { name: 's3', config: { command: 'c3' }, enabled: false, contextSaving: true },
@@ -1207,7 +1207,7 @@ describe('McpService', () => {
   });
 
   describe('extractMentions', () => {
-    const servers: ClaudianMcpServer[] = [
+    const servers: ObsidianCodeMcpServer[] = [
       { name: 'context7', config: { command: 'c1' }, enabled: true, contextSaving: true },
       { name: 'always-on', config: { command: 'c2' }, enabled: true, contextSaving: false },
       { name: 'disabled', config: { command: 'c3' }, enabled: false, contextSaving: true },
@@ -1231,7 +1231,7 @@ describe('McpService', () => {
 
   describe('helper methods', () => {
     it('should report server lists and enabled counts', () => {
-      const servers: ClaudianMcpServer[] = [
+      const servers: ObsidianCodeMcpServer[] = [
         { name: 's1', config: { command: 'c1' }, enabled: true, contextSaving: true },
         { name: 's2', config: { command: 'c2' }, enabled: true, contextSaving: false },
         { name: 's3', config: { command: 'c3' }, enabled: false, contextSaving: true },

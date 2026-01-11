@@ -1,4 +1,4 @@
-/** Claudian UI renderers - barrel export. */
+/** ObsidianCode UI renderers - barrel export. */
 
 export {
   type AskUserQuestionState,

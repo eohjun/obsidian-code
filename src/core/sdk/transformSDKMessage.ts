@@ -2,7 +2,7 @@
  * SDK Message Transformer
  *
  * Transforms Claude Agent SDK messages into StreamChunks for the UI.
- * Extracted from ClaudianService for better testability and separation of concerns.
+ * Extracted from ObsidianCodeService for better testability and separation of concerns.
  *
  * SDK Message Types:
  * - 'system' - init, status, etc.

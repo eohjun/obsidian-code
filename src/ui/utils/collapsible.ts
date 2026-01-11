@@ -1,5 +1,5 @@
 /**
- * Claudian - Shared collapsible utility
+ * ObsidianCode - Shared collapsible utility
  *
  * Provides reusable expand/collapse behavior for UI components.
  * Handles click, keyboard (Enter/Space), ARIA attributes, and CSS classes.

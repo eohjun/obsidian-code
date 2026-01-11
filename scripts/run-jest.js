@@ -3,11 +3,9 @@ const os = require('os');
 const path = require('path');
 
 const jestPath = require.resolve('jest/bin/jest');
-const localStorageFile = path.join(os.tmpdir(), 'claudian-localstorage');
-
 const result = spawnSync(
   process.execPath,
-  [`--localstorage-file=${localStorageFile}`, jestPath, ...process.argv.slice(2)],
+  [jestPath, ...process.argv.slice(2)],
   { stdio: 'inherit' }
 );
 

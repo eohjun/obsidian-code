@@ -1,7 +1,7 @@
 /* Image Context - Preview & Attachments */
 
 /* Image preview container (in input area) */
-.claudian-image-preview {
+.oc-image-preview {
   display: none;
   flex-wrap: wrap;
   gap: 8px;
@@ -10,7 +10,7 @@
 }
 
 /* Individual image preview chip */
-.claudian-image-chip {
+.oc-image-chip {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -21,12 +21,12 @@
   max-width: 200px;
 }
 
-.claudian-image-chip:hover {
+.oc-image-chip:hover {
   border-color: var(--interactive-accent);
 }
 
 /* Image thumbnail */
-.claudian-image-thumb {
+.oc-image-thumb {
   width: 40px;
   height: 40px;
   border-radius: 4px;
@@ -35,21 +35,21 @@
   cursor: pointer;
 }
 
-.claudian-image-thumb img {
+.oc-image-thumb img {
   width: 100%;
   height: 100%;
   object-fit: cover;
 }
 
 /* Image info */
-.claudian-image-info {
+.oc-image-info {
   display: flex;
   flex-direction: column;
   min-width: 0;
   flex: 1;
 }
 
-.claudian-image-name {
+.oc-image-name {
   font-size: 12px;
   color: var(--text-normal);
   overflow: hidden;
@@ -57,13 +57,13 @@
   white-space: nowrap;
 }
 
-.claudian-image-size {
+.oc-image-size {
   font-size: 10px;
   color: var(--text-muted);
 }
 
 /* Remove button */
-.claudian-image-remove {
+.oc-image-remove {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -78,13 +78,13 @@
   flex-shrink: 0;
 }
 
-.claudian-image-remove:hover {
+.oc-image-remove:hover {
   background: var(--background-modifier-error);
   color: var(--text-on-accent);
 }
 
 /* Drop overlay - inside input wrapper */
-.claudian-drop-overlay {
+.oc-drop-overlay {
   position: absolute;
   top: 0;
   left: 0;
@@ -100,11 +100,11 @@
   pointer-events: none;
 }
 
-.claudian-drop-overlay.visible {
+.oc-drop-overlay.visible {
   display: flex;
 }
 
-.claudian-drop-content {
+.oc-drop-content {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -112,11 +112,11 @@
   color: #D97757;
 }
 
-.claudian-drop-content svg {
+.oc-drop-content svg {
   opacity: 0.7;
 }
 
-.claudian-drop-content span {
+.oc-drop-content span {
   font-size: 12px;
   font-weight: 500;
 }
@@ -124,7 +124,7 @@
 /* Images in Messages (displayed above user bubble) */
 
 /* Images container - right-aligned above user message */
-.claudian-message-images {
+.oc-message-images {
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
@@ -134,7 +134,7 @@
 }
 
 /* Individual image in message - standardized size */
-.claudian-message-image {
+.oc-message-image {
   width: 120px;
   height: 120px;
   border-radius: 8px;
@@ -145,12 +145,12 @@
   border: 1px solid var(--background-modifier-border);
 }
 
-.claudian-message-image:hover {
+.oc-message-image:hover {
   transform: scale(1.03);
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
-.claudian-message-image img {
+.oc-message-image img {
   width: 100%;
   height: 100%;
   object-fit: cover;

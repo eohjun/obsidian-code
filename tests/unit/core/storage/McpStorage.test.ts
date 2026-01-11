@@ -33,12 +33,12 @@ describe('McpStorage', () => {
       expect(servers).toEqual([]);
     });
 
-    it('loads servers with disabledTools from _claudian metadata', async () => {
+    it('loads servers with disabledTools from _obsidianCode metadata', async () => {
       const config = {
         mcpServers: {
           alpha: { command: 'alpha-cmd', args: ['--arg'] },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             alpha: {
               enabled: true,
@@ -70,7 +70,7 @@ describe('McpStorage', () => {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             alpha: {
               disabledTools: ['valid', 123, null, 'also_valid'],
@@ -93,7 +93,7 @@ describe('McpStorage', () => {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _claudian: {
+        _obsidianCode: {
           servers: {
             alpha: {
               disabledTools: [],
@@ -129,7 +129,7 @@ describe('McpStorage', () => {
   });
 
   describe('save', () => {
-    it('saves disabledTools to _claudian metadata', async () => {
+    it('saves disabledTools to _obsidianCode metadata', async () => {
       const adapter = createMockAdapter();
       const storage = new McpStorage(adapter);
 
@@ -144,7 +144,7 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._claudian.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
+      expect(saved._obsidianCode.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
     it('trims and filters blank disabledTools on save', async () => {
@@ -162,7 +162,7 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._claudian.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
+      expect(saved._obsidianCode.servers.alpha.disabledTools).toEqual(['tool_a', 'tool_b']);
     });
 
     it('omits disabledTools from metadata when empty', async () => {
@@ -180,16 +180,16 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      // No _claudian since all fields are default
-      expect(saved._claudian).toBeUndefined();
+      // No _obsidianCode since all fields are default
+      expect(saved._obsidianCode).toBeUndefined();
     });
 
-    it('preserves existing _claudian metadata when saving', async () => {
+    it('preserves existing _obsidianCode metadata when saving', async () => {
       const existing = {
         mcpServers: {
           alpha: { command: 'alpha-cmd' },
         },
-        _claudian: {
+        _obsidianCode: {
           customField: 'should be preserved',
           servers: {
             alpha: { enabled: false },
@@ -213,8 +213,8 @@ describe('McpStorage', () => {
       ]);
 
       const saved = JSON.parse(adapter._store['.claude/mcp.json']);
-      expect(saved._claudian.customField).toBe('should be preserved');
-      expect(saved._claudian.servers.alpha.disabledTools).toEqual(['tool_a']);
+      expect(saved._obsidianCode.customField).toBe('should be preserved');
+      expect(saved._obsidianCode.servers.alpha.disabledTools).toEqual(['tool_a']);
     });
 
     it('round-trips disabledTools correctly', async () => {

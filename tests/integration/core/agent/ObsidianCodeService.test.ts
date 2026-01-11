@@ -21,7 +21,7 @@ jest.mock('@/core/types', () => {
 });
 
 // Now import after all mocks are set up
-import { ClaudianService } from '@/core/agent/ClaudianService';
+import { ObsidianCodeService } from '@/core/agent/ObsidianCodeService';
 import { createFileHashPostHook, createFileHashPreHook, type DiffContentEntry } from '@/core/hooks/DiffTrackingHooks';
 import { createVaultRestrictionHook } from '@/core/hooks/SecurityHooks';
 import { hydrateImagesData, readImageAttachmentBase64, resolveImageFilePath } from '@/core/images/imageLoader';
@@ -114,15 +114,15 @@ function createMockPlugin(settings = {}) {
   return mockPlugin;
 }
 
-describe('ClaudianService', () => {
-  let service: ClaudianService;
+describe('ObsidianCodeService', () => {
+  let service: ObsidianCodeService;
   let mockPlugin: any;
 
   beforeEach(() => {
     jest.clearAllMocks();
     resetMockMessages();
     mockPlugin = createMockPlugin();
-    service = new ClaudianService(mockPlugin, createMockMcpManager());
+    service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
   });
 
   describe('plan mode approvals', () => {
@@ -220,7 +220,7 @@ describe('ClaudianService', () => {
 
     it('should not block commands when blocklist is disabled', async () => {
       mockPlugin = createMockPlugin({ enableBlocklist: false });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -343,7 +343,7 @@ describe('ClaudianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockImplementation((p: string) => p === customPath);
       (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
@@ -373,7 +373,7 @@ describe('ClaudianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -412,7 +412,7 @@ describe('ClaudianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -451,7 +451,7 @@ describe('ClaudianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       const homeDir = os.homedir();
       const autoDetectedPath = path.join(homeDir, '.claude', 'local', 'claude');
@@ -502,7 +502,7 @@ describe('ClaudianService', () => {
           mockPlugin.getActiveEnvironmentVariables()
         )
       );
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockImplementation((p: string) => p === firstPath);
       (fs.statSync as jest.Mock).mockReturnValue({ isFile: () => true });
@@ -787,7 +787,7 @@ describe('ClaudianService', () => {
           },
         },
       };
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       const chunks: any[] = [];
       for await (const chunk of service.query('hello')) {
@@ -806,7 +806,7 @@ describe('ClaudianService', () => {
       mockPlugin = createMockPlugin({
         blockedCommands: { unix: ['rm\\s+-rf', 'chmod\\s+7{3}'], windows: [] },
       });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -829,7 +829,7 @@ describe('ClaudianService', () => {
       mockPlugin = createMockPlugin({
         blockedCommands: { unix: ['[invalid regex'], windows: [] },
       });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       (fs.existsSync as jest.Mock).mockReturnValue(true);
 
@@ -1475,7 +1475,7 @@ describe('ClaudianService', () => {
         permissionMode: 'normal',
         permissions: [],
       });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
     });
 
     it('should store session-scoped approved actions', async () => {
@@ -1569,7 +1569,7 @@ describe('ClaudianService', () => {
     beforeEach(() => {
       (fs.existsSync as jest.Mock).mockReturnValue(true);
       mockPlugin = createMockPlugin({ permissionMode: 'normal' });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
     });
 
     it('should deny when no approval callback is set', async () => {
@@ -1820,7 +1820,7 @@ describe('ClaudianService', () => {
 
     it('should set yolo mode options', async () => {
       mockPlugin = createMockPlugin({ permissionMode: 'yolo', thinkingBudget: 'off' });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
       mockPlugin.getResolvedClaudeCliPath.mockReturnValue('/mock/claude');
 
       setMockMessages([
@@ -1841,7 +1841,7 @@ describe('ClaudianService', () => {
 
     it('should set safe mode, resume, and thinking tokens', async () => {
       mockPlugin = createMockPlugin({ permissionMode: 'normal', thinkingBudget: 'high' });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
       mockPlugin.getResolvedClaudeCliPath.mockReturnValue('/mock/claude');
       service.setSessionId('resume-id');
 
@@ -2059,7 +2059,7 @@ describe('ClaudianService', () => {
       (fs.readFileSync as jest.Mock).mockReset();
 
       mockPlugin = createMockPlugin({ permissionMode: 'yolo' });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
       (service as any).vaultPath = '/test/vault/path';
     });
 
@@ -2224,7 +2224,7 @@ describe('ClaudianService', () => {
       mockPlugin = createMockPlugin({ permissionMode: 'normal', permissions: [
         { toolName: 'Read', pattern: '/test/file.md', approvedAt: Date.now(), scope: 'always' },
       ] });
-      service = new ClaudianService(mockPlugin, createMockMcpManager());
+      service = new ObsidianCodeService(mockPlugin, createMockMcpManager());
 
       const canUse = (service as any).createUnifiedToolCallback('normal');
       const res = await canUse('Read', { file_path: '/test/file.md' }, {});

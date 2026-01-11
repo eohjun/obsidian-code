@@ -6,17 +6,17 @@
  * Question Panel (replaces input area)
  * ============================================ */
 
-.claudian-ask-panel {
+.oc-ask-panel {
   padding: 12px 0;
   outline: none;
 }
 
-.claudian-ask-panel:focus {
+.oc-ask-panel:focus {
   outline: none;
 }
 
 /* Tab navigation row */
-.claudian-ask-panel-tabs {
+.oc-ask-panel-tabs {
   display: flex;
   align-items: center;
   flex-wrap: wrap;
@@ -25,17 +25,17 @@
   font-size: 13px;
 }
 
-.claudian-ask-panel-nav {
+.oc-ask-panel-nav {
   color: var(--text-muted);
   cursor: pointer;
   user-select: none;
 }
 
-.claudian-ask-panel-nav:hover {
+.oc-ask-panel-nav:hover {
   color: var(--text-normal);
 }
 
-.claudian-ask-panel-tab {
+.oc-ask-panel-tab {
   display: inline-flex;
   align-items: center;
   gap: 4px;
@@ -59,43 +59,43 @@
   text-shadow: none !important;
 }
 
-.claudian-ask-panel-tab:hover {
+.oc-ask-panel-tab:hover {
   color: var(--text-normal);
   background: none !important;
   box-shadow: none !important;
   border: none !important;
 }
 
-.claudian-ask-panel-tab:focus {
+.oc-ask-panel-tab:focus {
   outline: none !important;
   box-shadow: none !important;
   border: none !important;
 }
 
-.claudian-ask-panel-tab.active {
+.oc-ask-panel-tab.active {
   color: var(--interactive-accent);
   background: none !important;
   border: none !important;
 }
 
-.claudian-ask-panel-tab-check {
+.oc-ask-panel-tab-check {
   font-family: monospace;
 }
 
 /* Green dot for answered tabs */
-.claudian-ask-panel-tab.answered .claudian-ask-panel-tab-check {
+.oc-ask-panel-tab.answered .oc-ask-panel-tab-check {
   color: var(--color-green);
 }
 
 
 /* Question content */
-.claudian-ask-panel-content {
+.oc-ask-panel-content {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.claudian-ask-panel-question {
+.oc-ask-panel-question {
   font-size: 14px;
   font-weight: 600;
   color: var(--text-normal);
@@ -103,7 +103,7 @@
 }
 
 /* Options list */
-.claudian-ask-panel-options {
+.oc-ask-panel-options {
   display: flex;
   flex-direction: column;
   gap: 2px;
@@ -111,7 +111,7 @@
   font-size: 13px;
 }
 
-.claudian-ask-panel-option {
+.oc-ask-panel-option {
   display: flex;
   align-items: flex-start;
   gap: 8px;
@@ -120,20 +120,20 @@
   color: var(--text-normal);
 }
 
-.claudian-ask-panel-option:hover {
+.oc-ask-panel-option:hover {
   color: var(--interactive-accent);
 }
 
-.claudian-ask-panel-option.focused {
+.oc-ask-panel-option.focused {
   color: var(--interactive-accent);
 }
 
-.claudian-ask-panel-option.selected {
+.oc-ask-panel-option.selected {
   color: var(--interactive-accent);
 }
 
 /* Caret indicator (> or space) */
-.claudian-ask-panel-caret {
+.oc-ask-panel-caret {
   width: 12px;
   flex-shrink: 0;
   color: var(--interactive-accent);
@@ -141,58 +141,58 @@
 }
 
 /* Number/checkbox indicator */
-.claudian-ask-panel-indicator {
+.oc-ask-panel-indicator {
   flex-shrink: 0;
   color: var(--text-muted);
   white-space: nowrap;
 }
 
-.claudian-ask-panel-option.focused .claudian-ask-panel-caret {
+.oc-ask-panel-option.focused .oc-ask-panel-caret {
   color: var(--interactive-accent);
 }
 
-.claudian-ask-panel-option.focused .claudian-ask-panel-indicator {
+.oc-ask-panel-option.focused .oc-ask-panel-indicator {
   color: var(--interactive-accent);
 }
 
 /* Green checkmark for selected items */
-.claudian-ask-panel-option.selected .claudian-ask-panel-indicator {
+.oc-ask-panel-option.selected .oc-ask-panel-indicator {
   color: var(--color-green);
 }
 
-.claudian-ask-panel-option-text {
+.oc-ask-panel-option-text {
   display: flex;
   flex-direction: column;
   gap: 0;
 }
 
-.claudian-ask-panel-label-row {
+.oc-ask-panel-label-row {
   display: flex;
   align-items: center;
   gap: 4px;
 }
 
-.claudian-ask-panel-option-label {
+.oc-ask-panel-option-label {
   font-weight: 500;
 }
 
 /* Checkmark after label for single-select */
-.claudian-ask-panel-checkmark {
+.oc-ask-panel-checkmark {
   color: var(--color-green);
   font-weight: bold;
 }
 
-.claudian-ask-panel-option-desc {
+.oc-ask-panel-option-desc {
   color: var(--text-muted);
   font-weight: normal;
 }
 
 /* Other option */
-.claudian-ask-panel-other {
+.oc-ask-panel-other {
   flex-wrap: wrap;
 }
 
-.claudian-ask-panel-other-input {
+.oc-ask-panel-other-input {
   flex: 1;
   min-width: 150px;
   padding: 2px 4px;
@@ -204,24 +204,24 @@
   font-size: 13px;
 }
 
-.claudian-ask-panel-other-input:focus {
+.oc-ask-panel-other-input:focus {
   outline: none;
   border-bottom-color: var(--interactive-accent);
 }
 
-.claudian-ask-panel-other-input::placeholder {
+.oc-ask-panel-other-input::placeholder {
   color: var(--text-faint);
 }
 
 /* Keyboard hint */
-.claudian-ask-panel-hint {
+.oc-ask-panel-hint {
   margin-top: 12px;
   font-size: 12px;
   color: var(--text-muted);
 }
 
 /* Submit review panel */
-.claudian-ask-panel-summary {
+.oc-ask-panel-summary {
   display: flex;
   flex-direction: column;
   gap: 8px;
@@ -230,27 +230,27 @@
   font-size: 13px;
 }
 
-.claudian-ask-panel-summary-item {
+.oc-ask-panel-summary-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.claudian-ask-panel-summary-question {
+.oc-ask-panel-summary-question {
   color: var(--text-normal);
 }
 
-.claudian-ask-panel-summary-answer {
+.oc-ask-panel-summary-answer {
   color: var(--color-green);
   padding-left: 8px;
 }
 
-.claudian-ask-panel-summary-answer.unanswered {
+.oc-ask-panel-summary-answer.unanswered {
   color: var(--text-muted);
   font-style: italic;
 }
 
-.claudian-ask-panel-submit-prompt {
+.oc-ask-panel-submit-prompt {
   font-size: 13px;
   color: var(--text-muted);
   margin-bottom: 8px;
@@ -260,16 +260,16 @@
  * Tool Call Result Block - matches toolcalls.css style
  * ============================================ */
 
-.claudian-ask-question-block {
+.oc-ask-question-block {
   margin: 8px 0;
 }
 
-.claudian-ask-question-block.claudian-ask-question-pending {
+.oc-ask-question-block.oc-ask-question-pending {
   display: none;
 }
 
 /* Header - transparent like other tool calls */
-.claudian-ask-question-header {
+.oc-ask-question-header {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -277,19 +277,19 @@
   cursor: pointer;
 }
 
-.claudian-ask-question-icon {
+.oc-ask-question-icon {
   display: flex;
   align-items: center;
   flex-shrink: 0;
   color: var(--text-accent);
 }
 
-.claudian-ask-question-icon svg {
+.oc-ask-question-icon svg {
   width: 16px;
   height: 16px;
 }
 
-.claudian-ask-question-label {
+.oc-ask-question-label {
   flex: 1;
   font-size: 13px;
   font-weight: 500;
@@ -299,50 +299,50 @@
   white-space: nowrap;
 }
 
-.claudian-ask-question-count {
+.oc-ask-question-count {
   font-size: 12px;
   color: var(--text-muted);
 }
 
-.claudian-ask-question-status {
+.oc-ask-question-status {
   display: flex;
   align-items: center;
   flex-shrink: 0;
 }
 
-.claudian-ask-question-status svg {
+.oc-ask-question-status svg {
   width: 14px;
   height: 14px;
 }
 
-.claudian-ask-question-status.status-completed {
+.oc-ask-question-status.status-completed {
   color: var(--color-green);
 }
 
-.claudian-ask-question-status.status-error,
-.claudian-ask-question-status.status-blocked {
+.oc-ask-question-status.status-error,
+.oc-ask-question-status.status-blocked {
   color: var(--color-red);
 }
 
 /* Content - indented to align under label */
-.claudian-ask-question-content {
+.oc-ask-question-content {
   padding: 4px 0 4px 24px;
 }
 
 /* Q&A pairs */
-.claudian-ask-question-qa {
+.oc-ask-question-qa {
   display: flex;
   flex-direction: column;
   gap: 4px;
   padding: 6px 0;
 }
 
-.claudian-ask-question-qa + .claudian-ask-question-qa {
+.oc-ask-question-qa + .oc-ask-question-qa {
   border-top: 1px solid var(--background-modifier-border);
   padding-top: 10px;
 }
 
-.claudian-ask-question-q-header {
+.oc-ask-question-q-header {
   font-size: 11px;
   font-weight: 600;
   color: var(--text-muted);
@@ -350,47 +350,47 @@
   letter-spacing: 0.5px;
 }
 
-.claudian-ask-question-answer {
+.oc-ask-question-answer {
   font-size: 13px;
   color: var(--text-normal);
   padding-left: 8px;
   border-left: 2px solid var(--interactive-accent);
 }
 
-.claudian-ask-question-error {
+.oc-ask-question-error {
   font-size: 12px;
   color: var(--color-red);
   font-style: italic;
 }
 
 /* Q&A list - tree symbol + aligned container */
-.claudian-ask-question-list {
+.oc-ask-question-list {
   display: flex;
   flex-direction: row;
   align-items: flex-start;
   gap: 8px;
 }
 
-.claudian-ask-question-tree {
+.oc-ask-question-tree {
   flex-shrink: 0;
   font-size: 13px;
   color: var(--text-muted);
 }
 
-.claudian-ask-question-aligned {
+.oc-ask-question-aligned {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.claudian-ask-question-item {
+.oc-ask-question-item {
   display: flex;
   flex-direction: column;
   gap: 2px;
 }
 
-.claudian-ask-question-q {
+.oc-ask-question-q {
   font-size: 13px;
   color: var(--text-muted);
   /* Hanging indent: wrapped lines align with text after "Q: " */
@@ -398,7 +398,7 @@
   text-indent: -1.5em;
 }
 
-.claudian-ask-question-a {
+.oc-ask-question-a {
   font-size: 13px;
   color: var(--color-green);
   /* Hanging indent: wrapped lines align with text after "A: " */

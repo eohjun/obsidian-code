@@ -5,16 +5,16 @@
  * No UI or @-mention logic - those belong in features/mcp/.
  */
 
-import type { ClaudianMcpServer, McpServerConfig } from '../types';
+import type { ObsidianCodeMcpServer, McpServerConfig } from '../types';
 
 /** Storage interface for loading MCP servers. */
 export interface McpStorageAdapter {
-  load(): Promise<ClaudianMcpServer[]>;
+  load(): Promise<ObsidianCodeMcpServer[]>;
 }
 
 /** Manages MCP server configurations. */
 export class McpServerManager {
-  private servers: ClaudianMcpServer[] = [];
+  private servers: ObsidianCodeMcpServer[] = [];
   private storage: McpStorageAdapter;
 
   constructor(storage: McpStorageAdapter) {
@@ -27,7 +27,7 @@ export class McpServerManager {
   }
 
   /** Get all loaded servers. */
-  getServers(): ClaudianMcpServer[] {
+  getServers(): ObsidianCodeMcpServer[] {
     return this.servers;
   }
 

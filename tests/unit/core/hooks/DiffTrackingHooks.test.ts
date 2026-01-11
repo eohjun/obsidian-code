@@ -44,9 +44,9 @@ describe('DiffTrackingHooks path normalization', () => {
   });
 
   it('expands environment variables before reading filesystem in post-hook', async () => {
-    const envKey = 'CLAUDIAN_DIFF_TEST_PATH';
+    const envKey = 'OBSIDIAN_CODE_DIFF_TEST_PATH';
     const originalValue = process.env[envKey];
-    process.env[envKey] = '/tmp/claudian';
+    process.env[envKey] = '/tmp/obsidian-code';
 
     readSpy.mockReturnValue('new');
 
@@ -69,7 +69,7 @@ describe('DiffTrackingHooks path normalization', () => {
       { signal: new AbortController().signal }
     );
 
-    expect(existsSpy).toHaveBeenCalledWith('/tmp/claudian/notes/a.md');
+    expect(existsSpy).toHaveBeenCalledWith('/tmp/obsidian-code/notes/a.md');
     expect(pendingDiffData.get('tool-2')).toEqual({
       filePath: `$${envKey}/notes/a.md`,
       originalContent: 'old',

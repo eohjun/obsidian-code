@@ -94,15 +94,15 @@ export class MessageRenderer {
     }
 
     const msgEl = this.messagesEl.createDiv({
-      cls: `claudian-message claudian-message-${msg.role}`,
+      cls: `oc-message oc-message-${msg.role}`,
     });
 
-    const contentEl = msgEl.createDiv({ cls: 'claudian-message-content' });
+    const contentEl = msgEl.createDiv({ cls: 'oc-message-content' });
 
     if (msg.role === 'user') {
       const textToShow = msg.displayContent ?? msg.content;
       if (textToShow) {
-        const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
+        const textEl = contentEl.createDiv({ cls: 'oc-text-block' });
         void this.renderContent(textEl, textToShow);
       }
     }
@@ -126,12 +126,12 @@ export class MessageRenderer {
     messages: ChatMessage[],
     getGreeting: () => string
   ): HTMLElement {
-    const existingTodoPanel = this.messagesEl.querySelector('.claudian-todo-panel') as HTMLElement | null;
+    const existingTodoPanel = this.messagesEl.querySelector('.oc-todo-panel') as HTMLElement | null;
     this.messagesEl.empty();
 
     // Recreate welcome element after clearing
-    const newWelcomeEl = this.messagesEl.createDiv({ cls: 'claudian-welcome' });
-    newWelcomeEl.createDiv({ cls: 'claudian-welcome-greeting', text: getGreeting() });
+    const newWelcomeEl = this.messagesEl.createDiv({ cls: 'oc-welcome' });
+    newWelcomeEl.createDiv({ cls: 'oc-welcome-greeting', text: getGreeting() });
 
     for (const msg of messages) {
       this.renderStoredMessage(msg);
@@ -171,20 +171,20 @@ export class MessageRenderer {
     }
 
     const msgEl = this.messagesEl.createDiv({
-      cls: `claudian-message claudian-message-${msg.role}`,
+      cls: `oc-message oc-message-${msg.role}`,
     });
 
     // Apply plan message styling if this is a plan message
     if (msg.isPlanMessage) {
-      msgEl.classList.add('claudian-message-plan');
+      msgEl.classList.add('oc-message-plan');
     }
 
-    const contentEl = msgEl.createDiv({ cls: 'claudian-message-content' });
+    const contentEl = msgEl.createDiv({ cls: 'oc-message-content' });
 
     if (msg.role === 'user') {
       const textToShow = msg.displayContent ?? msg.content;
       if (textToShow) {
-        const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
+        const textEl = contentEl.createDiv({ cls: 'oc-text-block' });
         void this.renderContent(textEl, textToShow);
       }
     } else if (msg.role === 'assistant') {
@@ -197,25 +197,25 @@ export class MessageRenderer {
    */
   private renderApprovalIndicator(indicator: NonNullable<ChatMessage['approvalIndicator']>): HTMLElement {
     const indicatorEl = this.messagesEl.createDiv({
-      cls: 'claudian-approval-indicator',
+      cls: 'oc-approval-indicator',
     });
 
-    const iconEl = indicatorEl.createSpan({ cls: 'claudian-approval-indicator-icon' });
-    const textEl = indicatorEl.createSpan({ cls: 'claudian-approval-indicator-text' });
+    const iconEl = indicatorEl.createSpan({ cls: 'oc-approval-indicator-icon' });
+    const textEl = indicatorEl.createSpan({ cls: 'oc-approval-indicator-text' });
 
     switch (indicator.type) {
       case 'approve':
-        indicatorEl.classList.add('claudian-approval-indicator-approve');
+        indicatorEl.classList.add('oc-approval-indicator-approve');
         setIcon(iconEl, 'check');
         textEl.textContent = 'User approved plan.';
         break;
       case 'approve_new_session':
-        indicatorEl.classList.add('claudian-approval-indicator-approve');
+        indicatorEl.classList.add('oc-approval-indicator-approve');
         setIcon(iconEl, 'check');
         textEl.textContent = 'User approved plan, implement in new session.';
         break;
       case 'revise':
-        indicatorEl.classList.add('claudian-approval-indicator-revise');
+        indicatorEl.classList.add('oc-approval-indicator-revise');
         setIcon(iconEl, 'x');
         textEl.textContent = indicator.feedback || 'User requested revision.';
         break;
@@ -238,7 +238,7 @@ export class MessageRenderer {
             (el, md) => this.renderContent(el, md)
           );
         } else if (block.type === 'text') {
-          const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
+          const textEl = contentEl.createDiv({ cls: 'oc-text-block' });
           void this.renderContent(textEl, block.content);
         } else if (block.type === 'tool_use') {
           const toolCall = msg.toolCalls?.find(tc => tc.id === block.toolId);
@@ -260,7 +260,7 @@ export class MessageRenderer {
     } else {
       // Fallback for old conversations without contentBlocks
       if (msg.content) {
-        const textEl = contentEl.createDiv({ cls: 'claudian-text-block' });
+        const textEl = contentEl.createDiv({ cls: 'oc-text-block' });
         void this.renderContent(textEl, msg.content);
       }
       if (msg.toolCalls) {
@@ -296,10 +296,10 @@ export class MessageRenderer {
    * Renders image attachments above a message.
    */
   renderMessageImages(containerEl: HTMLElement, images: ImageAttachment[]): void {
-    const imagesEl = containerEl.createDiv({ cls: 'claudian-message-images' });
+    const imagesEl = containerEl.createDiv({ cls: 'oc-message-images' });
 
     for (const image of images) {
-      const imageWrapper = imagesEl.createDiv({ cls: 'claudian-message-image' });
+      const imageWrapper = imagesEl.createDiv({ cls: 'oc-message-image' });
       const imgEl = imageWrapper.createEl('img', {
         attr: {
           alt: image.name,
@@ -322,8 +322,8 @@ export class MessageRenderer {
     const dataUri = getImageAttachmentDataUri(this.app, image);
     if (!dataUri) return;
 
-    const overlay = document.body.createDiv({ cls: 'claudian-image-modal-overlay' });
-    const modal = overlay.createDiv({ cls: 'claudian-image-modal' });
+    const overlay = document.body.createDiv({ cls: 'oc-image-modal-overlay' });
+    const modal = overlay.createDiv({ cls: 'oc-image-modal' });
 
     modal.createEl('img', {
       attr: {
@@ -332,7 +332,7 @@ export class MessageRenderer {
       },
     });
 
-    const closeBtn = modal.createDiv({ cls: 'claudian-image-modal-close' });
+    const closeBtn = modal.createDiv({ cls: 'oc-image-modal-close' });
     closeBtn.setText('\u00D7');
 
     const handleEsc = (e: KeyboardEvent) => {
@@ -379,10 +379,10 @@ export class MessageRenderer {
     // Wrap pre elements and move buttons outside scroll area
     el.querySelectorAll('pre').forEach((pre) => {
       // Skip if already wrapped
-      if (pre.parentElement?.classList.contains('claudian-code-wrapper')) return;
+      if (pre.parentElement?.classList.contains('oc-code-wrapper')) return;
 
       // Create wrapper
-      const wrapper = createEl('div', { cls: 'claudian-code-wrapper' });
+      const wrapper = createEl('div', { cls: 'oc-code-wrapper' });
       pre.parentElement?.insertBefore(wrapper, pre);
       wrapper.appendChild(pre);
 
@@ -393,7 +393,7 @@ export class MessageRenderer {
         if (match) {
           wrapper.classList.add('has-language');
           const label = createEl('span', {
-            cls: 'claudian-code-lang-label',
+            cls: 'oc-code-lang-label',
             text: match[1],
           });
           wrapper.appendChild(label);
@@ -438,7 +438,7 @@ export class MessageRenderer {
 
   /** Keeps the persistent todo panel pinned to the bottom of the messages container. */
   private ensureTodoPanelAtBottom(panelEl?: HTMLElement | null): void {
-    const todoPanel = panelEl ?? (this.messagesEl.querySelector('.claudian-todo-panel') as HTMLElement | null);
+    const todoPanel = panelEl ?? (this.messagesEl.querySelector('.oc-todo-panel') as HTMLElement | null);
     if (todoPanel) {
       this.messagesEl.appendChild(todoPanel);
     }

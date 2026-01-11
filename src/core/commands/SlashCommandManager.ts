@@ -1,5 +1,5 @@
 /**
- * Claudian - Slash command manager
+ * ObsidianCode - Slash command manager
  *
  * Core logic for parsing and expanding slash commands with Claude Code compatibility.
  * Supports $ARGUMENTS, $1/$2, @file references, and !`bash` execution.

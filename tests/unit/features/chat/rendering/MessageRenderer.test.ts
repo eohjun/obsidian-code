@@ -95,7 +95,7 @@ describe('MessageRenderer', () => {
 
     expect(messagesEl.empty).toHaveBeenCalled();
     expect(renderStoredSpy).toHaveBeenCalledTimes(1);
-    expect(welcomeEl.hasClass('claudian-welcome')).toBe(true);
+    expect(welcomeEl.hasClass('oc-welcome')).toBe(true);
     expect(welcomeEl.children[0].textContent).toBe('Hello');
   });
 

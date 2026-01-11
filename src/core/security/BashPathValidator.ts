@@ -2,7 +2,7 @@
  * Bash Path Validator
  *
  * Pure functions for parsing bash commands and validating path access.
- * Extracted from ClaudianService for better testability and separation of concerns.
+ * Extracted from ObsidianCodeService for better testability and separation of concerns.
  */
 
 import * as path from 'path';

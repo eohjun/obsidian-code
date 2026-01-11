@@ -1,5 +1,5 @@
 /**
- * Claudian - MCP (Model Context Protocol) type definitions
+ * Obsidian Code - MCP (Model Context Protocol) type definitions
  *
  * Types for configuring and managing MCP servers that extend Claude's capabilities.
  */
@@ -35,8 +35,8 @@ export type McpServerConfig =
 /** Server type identifier. */
 export type McpServerType = 'stdio' | 'sse' | 'http';
 
-/** Extended server configuration with Claudian-specific options. */
-export interface ClaudianMcpServer {
+/** Extended server configuration with Obsidian Code-specific options. */
+export interface ObsidianCodeMcpServer {
   /** Unique server name (key in mcpServers record). */
   name: string;
   /** Server configuration. */
@@ -56,10 +56,10 @@ export interface McpConfigFile {
   mcpServers: Record<string, McpServerConfig>;
 }
 
-/** Extended config file with Claudian metadata. */
-export interface ClaudianMcpConfigFile extends McpConfigFile {
-  _claudian?: {
-    /** Per-server Claudian-specific settings. */
+/** Extended config file with Obsidian Code metadata. */
+export interface ObsidianCodeMcpConfigFile extends McpConfigFile {
+  _obsidianCode?: {
+    /** Per-server Obsidian Code-specific settings. */
     servers: Record<
       string,
       {
@@ -109,7 +109,7 @@ export function inferMcpServerType(config: McpServerConfig): McpServerType {
 }
 
 /** Default values for a new MCP server. */
-export const DEFAULT_MCP_SERVER: Omit<ClaudianMcpServer, 'name' | 'config'> = {
+export const DEFAULT_MCP_SERVER: Omit<ObsidianCodeMcpServer, 'name' | 'config'> = {
   enabled: true,
   contextSaving: true,
 };

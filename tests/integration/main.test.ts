@@ -1,14 +1,14 @@
 import * as imageCache from '@/core/images/imageCache';
-import { DEFAULT_SETTINGS, VIEW_TYPE_CLAUDIAN } from '@/core/types';
+import { DEFAULT_SETTINGS, VIEW_TYPE_OBSIDIAN_CODE } from '@/core/types';
 
-// Mock fs for ClaudianService
+// Mock fs for ObsidianCodeService
 jest.mock('fs');
 
 // Now import the plugin after mocking
-import ClaudianPlugin from '@/main';
+import ObsidianCodePlugin from '@/main';
 
-describe('ClaudianPlugin', () => {
-  let plugin: ClaudianPlugin;
+describe('ObsidianCodePlugin', () => {
+  let plugin: ObsidianCodePlugin;
   let mockApp: any;
   let mockManifest: any;
 
@@ -40,13 +40,13 @@ describe('ClaudianPlugin', () => {
     };
 
     mockManifest = {
-      id: 'claudian',
-      name: 'Claudian',
+      id: 'cc-obsidian',
+      name: 'ObsidianCode',
       version: '0.1.0',
     };
 
     // Create plugin instance with mocked app
-    plugin = new ClaudianPlugin(mockApp, mockManifest);
+    plugin = new ObsidianCodePlugin(mockApp, mockManifest);
     (plugin.loadData as jest.Mock).mockResolvedValue({});
   });
 
@@ -69,7 +69,7 @@ describe('ClaudianPlugin', () => {
       await plugin.onload();
 
       expect((plugin.registerView as jest.Mock)).toHaveBeenCalledWith(
-        VIEW_TYPE_CLAUDIAN,
+        VIEW_TYPE_OBSIDIAN_CODE,
         expect.any(Function)
       );
     });
@@ -79,7 +79,7 @@ describe('ClaudianPlugin', () => {
 
       expect((plugin.addRibbonIcon as jest.Mock)).toHaveBeenCalledWith(
         'bot',
-        'Open Claudian',
+        'Open cc-obsidian',
         expect.any(Function)
       );
     });
@@ -136,7 +136,7 @@ describe('ClaudianPlugin', () => {
 
       expect(mockApp.workspace.getRightLeaf).toHaveBeenCalledWith(false);
       expect(mockRightLeaf.setViewState).toHaveBeenCalledWith({
-        type: VIEW_TYPE_CLAUDIAN,
+        type: VIEW_TYPE_OBSIDIAN_CODE,
         active: true,
       });
     });
@@ -433,7 +433,7 @@ describe('ClaudianPlugin', () => {
   describe('cleanupConversationImages', () => {
     it('deletes cached images not used elsewhere', async () => {
       await plugin.onload();
-      const deleteSpy = jest.spyOn(imageCache, 'deleteCachedImages').mockImplementation(() => {});
+      const deleteSpy = jest.spyOn(imageCache, 'deleteCachedImages').mockImplementation(() => { });
 
       const convA: any = {
         id: 'a',
@@ -442,10 +442,12 @@ describe('ClaudianPlugin', () => {
         updatedAt: Date.now(),
         sessionId: null,
         messages: [
-          { id: 'm1', role: 'user', content: '', timestamp: 0, images: [
-            { id: 'i1', name: 'x', mediaType: 'image/png', cachePath: 'path1', size: 1, source: 'file' },
-            { id: 'i2', name: 'y', mediaType: 'image/png', cachePath: 'path2', size: 1, source: 'file' },
-          ] },
+          {
+            id: 'm1', role: 'user', content: '', timestamp: 0, images: [
+              { id: 'i1', name: 'x', mediaType: 'image/png', cachePath: 'path1', size: 1, source: 'file' },
+              { id: 'i2', name: 'y', mediaType: 'image/png', cachePath: 'path2', size: 1, source: 'file' },
+            ]
+          },
         ],
       };
 
@@ -456,9 +458,11 @@ describe('ClaudianPlugin', () => {
         updatedAt: Date.now(),
         sessionId: null,
         messages: [
-          { id: 'm2', role: 'user', content: '', timestamp: 0, images: [
-            { id: 'i3', name: 'z', mediaType: 'image/png', cachePath: 'path1', size: 1, source: 'file' },
-          ] },
+          {
+            id: 'm2', role: 'user', content: '', timestamp: 0, images: [
+              { id: 'i3', name: 'z', mediaType: 'image/png', cachePath: 'path1', size: 1, source: 'file' },
+            ]
+          },
         ],
       };
 

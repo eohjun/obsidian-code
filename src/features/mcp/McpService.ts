@@ -7,14 +7,14 @@
  */
 
 import { McpServerManager } from '../../core/mcp';
-import type { ClaudianMcpServer, McpServerConfig } from '../../core/types';
-import type ClaudianPlugin from '../../main';
+import type { ObsidianCodeMcpServer, McpServerConfig } from '../../core/types';
+import type ObsidianCodePlugin from '../../main';
 import { extractMcpMentions, transformMcpMentions } from '../../utils/mcp';
 
 export class McpService {
   private manager: McpServerManager;
 
-  constructor(plugin: ClaudianPlugin) {
+  constructor(plugin: ObsidianCodePlugin) {
     this.manager = new McpServerManager(plugin.storage.mcp);
   }
 
@@ -28,7 +28,7 @@ export class McpService {
   }
 
   /** Get all loaded servers. */
-  getServers(): ClaudianMcpServer[] {
+  getServers(): ObsidianCodeMcpServer[] {
     return this.manager.getServers();
   }
 
@@ -62,7 +62,7 @@ export class McpService {
   }
 
   /** Get servers with context-saving enabled (for @-mention autocomplete). */
-  getContextSavingServers(): ClaudianMcpServer[] {
+  getContextSavingServers(): ObsidianCodeMcpServer[] {
     return this.manager.getServers().filter((s) => s.enabled && s.contextSaving);
   }
 

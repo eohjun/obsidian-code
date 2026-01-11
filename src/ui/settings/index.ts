@@ -1,4 +1,4 @@
-/** Claudian UI settings - barrel export. */
+/** ObsidianCode UI settings - barrel export. */
 
 export {
   EnvSnippetManager,

@@ -1,5 +1,5 @@
 /**
- * Claudian - Markdown Utilities
+ * ObsidianCode - Markdown Utilities
  *
  * Markdown manipulation helpers.
  */

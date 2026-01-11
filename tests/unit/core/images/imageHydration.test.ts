@@ -30,11 +30,11 @@ function createMockPlugin(vaultPath: string) {
 }
 
 function createTempVault() {
-  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'claudian-vault-'));
+  const dir = fs.mkdtempSync(path.join(os.tmpdir(), 'oc-vault-'));
   return dir;
 }
 
-describe('ClaudianService image hydration', () => {
+describe('ObsidianCodeService image hydration', () => {
   let vaultPath: string;
   let plugin: any;
 
@@ -91,7 +91,7 @@ describe('ClaudianService image hydration', () => {
       name: 'missing.png',
       mediaType: 'image/png',
       size: 1,
-      cachePath: '.claudian-cache/images/missing.png',
+      cachePath: '.oc-cache/images/missing.png',
       filePath: 'missing.png',
       source: 'paste',
     }];

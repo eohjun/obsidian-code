@@ -1,5 +1,5 @@
 /**
- * Claudian - Instruction refine service
+ * ObsidianCode - Instruction refine service
  *
  * Lightweight Claude query service for refining user instructions.
  * Uses read-only tools and parses <instruction> tags from response.
@@ -11,7 +11,7 @@ import { query as agentQuery } from '@anthropic-ai/claude-agent-sdk';
 import { buildRefineSystemPrompt } from '../../../core/prompts/instructionRefine';
 import { TOOL_GLOB, TOOL_GREP, TOOL_READ } from '../../../core/tools/toolNames';
 import { type InstructionRefineResult, THINKING_BUDGETS } from '../../../core/types';
-import type ClaudianPlugin from '../../../main';
+import type ObsidianCodePlugin from '../../../main';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../../utils/env';
 import { getVaultPath, isPathWithinVault as isPathWithinVaultUtil } from '../../../utils/path';
 
@@ -22,12 +22,12 @@ export type RefineProgressCallback = (update: InstructionRefineResult) => void;
 
 /** Service for refining user instructions with Claude. */
 export class InstructionRefineService {
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
   private abortController: AbortController | null = null;
   private sessionId: string | null = null;
   private existingInstructions: string = '';
 
-  constructor(plugin: ClaudianPlugin) {
+  constructor(plugin: ObsidianCodePlugin) {
     this.plugin = plugin;
   }
 

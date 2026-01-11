@@ -1,5 +1,5 @@
 /* Permission Mode Toggle */
-.claudian-permission-toggle {
+.oc-permission-toggle {
   display: flex;
   align-items: center;
   gap: 6px;
@@ -8,13 +8,13 @@
   padding-right: 8px;
 }
 
-.claudian-permission-label {
+.oc-permission-label {
   font-size: 11px;
   color: var(--text-muted);
   min-width: 28px;
 }
 
-.claudian-toggle-switch {
+.oc-toggle-switch {
   width: 32px;
   height: 18px;
   border-radius: 9px;
@@ -25,7 +25,7 @@
   flex-shrink: 0;
 }
 
-.claudian-toggle-switch::after {
+.oc-toggle-switch::after {
   content: '';
   position: absolute;
   width: 14px;
@@ -37,25 +37,25 @@
   transition: transform 0.2s ease, background 0.2s ease;
 }
 
-.claudian-toggle-switch:hover {
+.oc-toggle-switch:hover {
   background: var(--background-modifier-hover);
 }
 
-.claudian-toggle-switch.active {
+.oc-toggle-switch.active {
   background: rgba(217, 119, 87, 0.3);
 }
 
-.claudian-toggle-switch.active::after {
+.oc-toggle-switch.active::after {
   transform: translateX(14px);
   background: #D97757;
 }
 
 /* Plan mode state */
-.claudian-permission-toggle.plan-mode {
+.oc-permission-toggle.plan-mode {
   cursor: pointer;
 }
 
-.claudian-permission-toggle.plan-mode .claudian-permission-label {
+.oc-permission-toggle.plan-mode .oc-permission-label {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -64,11 +64,11 @@
   min-width: auto;
 }
 
-.claudian-permission-toggle.plan-mode .claudian-toggle-switch {
+.oc-permission-toggle.plan-mode .oc-toggle-switch {
   display: none;
 }
 
-.claudian-plan-mode-icon {
+.oc-plan-mode-icon {
   display: flex;
   align-items: center;
   font-size: 10px;
@@ -77,6 +77,6 @@
   margin-right: 2px;
 }
 
-.claudian-permission-toggle.plan-mode:hover .claudian-permission-label {
+.oc-permission-toggle.plan-mode:hover .oc-permission-label {
   opacity: 0.8;
 }

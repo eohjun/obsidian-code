@@ -1,5 +1,5 @@
 /**
- * Claudian - Title generation service
+ * ObsidianCode - Title generation service
  *
  * Lightweight Claude query service for generating conversation titles
  * based on first user message and first AI response.
@@ -9,7 +9,7 @@ import type { Options } from '@anthropic-ai/claude-agent-sdk';
 import { query as agentQuery } from '@anthropic-ai/claude-agent-sdk';
 
 import { TITLE_GENERATION_SYSTEM_PROMPT } from '../../../core/prompts/titleGeneration';
-import type ClaudianPlugin from '../../../main';
+import type ObsidianCodePlugin from '../../../main';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../../utils/env';
 import { getVaultPath } from '../../../utils/path';
 
@@ -26,11 +26,11 @@ export type TitleGenerationCallback = (
 
 /** Service for generating conversation titles with AI. */
 export class TitleGenerationService {
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
   /** Map of conversationId to AbortController for concurrent generation support. */
   private activeGenerations: Map<string, AbortController> = new Map();
 
-  constructor(plugin: ClaudianPlugin) {
+  constructor(plugin: ObsidianCodePlugin) {
     this.plugin = plugin;
   }
 

@@ -1,9 +1,9 @@
 /* Model selector */
-.claudian-model-selector {
+.oc-model-selector {
   position: relative;
 }
 
-.claudian-model-btn {
+.oc-model-btn {
   display: flex;
   align-items: center;
   gap: 4px;
@@ -14,21 +14,21 @@
   font-size: 12px;
 }
 
-.claudian-model-label {
+.oc-model-label {
   font-weight: 500;
 }
 
-.claudian-model-chevron {
+.oc-model-chevron {
   display: flex;
   align-items: center;
 }
 
-.claudian-model-chevron svg {
+.oc-model-chevron svg {
   width: 12px;
   height: 12px;
 }
 
-.claudian-model-dropdown {
+.oc-model-dropdown {
   position: absolute;
   bottom: 100%;
   left: 0;
@@ -48,12 +48,12 @@
   transition: opacity 0.15s ease, visibility 0.15s ease;
 }
 
-.claudian-model-selector:hover .claudian-model-dropdown {
+.oc-model-selector:hover .oc-model-dropdown {
   opacity: 1;
   visibility: visible;
 }
 
-.claudian-model-option {
+.oc-model-option {
   padding: 4px 8px;
   cursor: pointer;
   font-size: 12px;
@@ -63,12 +63,12 @@
   white-space: nowrap;
 }
 
-.claudian-model-option:hover {
+.oc-model-option:hover {
   background: var(--background-modifier-hover);
   color: var(--text-normal);
 }
 
-.claudian-model-option.selected {
+.oc-model-option.selected {
   background: rgba(217, 119, 87, 0.15);
   color: #D97757;
   font-weight: 500;

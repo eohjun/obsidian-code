@@ -1,5 +1,5 @@
 /**
- * Claudian - Image context manager
+ * ObsidianCode - Image context manager
  *
  * Manages image attachments via drag/drop and paste.
  */
@@ -47,8 +47,8 @@ export class ImageContextManager {
     this.inputEl = inputEl;
     this.callbacks = callbacks;
 
-    const fileIndicator = this.containerEl.querySelector('.claudian-file-indicator');
-    this.imagePreviewEl = this.containerEl.createDiv({ cls: 'claudian-image-preview' });
+    const fileIndicator = this.containerEl.querySelector('.oc-file-indicator');
+    this.imagePreviewEl = this.containerEl.createDiv({ cls: 'oc-image-preview' });
     if (fileIndicator) {
       this.containerEl.insertBefore(this.imagePreviewEl, fileIndicator);
     }
@@ -82,11 +82,11 @@ export class ImageContextManager {
   }
 
   private setupDragAndDrop() {
-    const inputWrapper = this.containerEl.querySelector('.claudian-input-wrapper') as HTMLElement;
+    const inputWrapper = this.containerEl.querySelector('.oc-input-wrapper') as HTMLElement;
     if (!inputWrapper) return;
 
-    this.dropOverlay = inputWrapper.createDiv({ cls: 'claudian-drop-overlay' });
-    const dropContent = this.dropOverlay.createDiv({ cls: 'claudian-drop-content' });
+    this.dropOverlay = inputWrapper.createDiv({ cls: 'oc-drop-overlay' });
+    const dropContent = this.dropOverlay.createDiv({ cls: 'oc-drop-content' });
     const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg');
     svg.setAttribute('viewBox', '0 0 24 24');
     svg.setAttribute('width', '32');
@@ -135,7 +135,7 @@ export class ImageContextManager {
     e.preventDefault();
     e.stopPropagation();
 
-    const inputWrapper = this.containerEl.querySelector('.claudian-input-wrapper');
+    const inputWrapper = this.containerEl.querySelector('.oc-input-wrapper');
     if (!inputWrapper) {
       this.dropOverlay?.removeClass('visible');
       return;
@@ -265,9 +265,9 @@ export class ImageContextManager {
   }
 
   private renderImagePreview(id: string, image: ImageAttachment) {
-    const previewEl = this.imagePreviewEl.createDiv({ cls: 'claudian-image-chip' });
+    const previewEl = this.imagePreviewEl.createDiv({ cls: 'oc-image-chip' });
 
-    const thumbEl = previewEl.createDiv({ cls: 'claudian-image-thumb' });
+    const thumbEl = previewEl.createDiv({ cls: 'oc-image-thumb' });
     thumbEl.createEl('img', {
       attr: {
         src: `data:${image.mediaType};base64,${image.data}`,
@@ -275,15 +275,15 @@ export class ImageContextManager {
       },
     });
 
-    const infoEl = previewEl.createDiv({ cls: 'claudian-image-info' });
-    const nameEl = infoEl.createSpan({ cls: 'claudian-image-name' });
+    const infoEl = previewEl.createDiv({ cls: 'oc-image-info' });
+    const nameEl = infoEl.createSpan({ cls: 'oc-image-name' });
     nameEl.setText(this.truncateName(image.name, 20));
     nameEl.setAttribute('title', image.name);
 
-    const sizeEl = infoEl.createSpan({ cls: 'claudian-image-size' });
+    const sizeEl = infoEl.createSpan({ cls: 'oc-image-size' });
     sizeEl.setText(this.formatSize(image.size));
 
-    const removeEl = previewEl.createSpan({ cls: 'claudian-image-remove' });
+    const removeEl = previewEl.createSpan({ cls: 'oc-image-remove' });
     removeEl.setText('\u00D7');
     removeEl.setAttribute('aria-label', 'Remove image');
 
@@ -300,8 +300,8 @@ export class ImageContextManager {
   }
 
   private showFullImage(image: ImageAttachment) {
-    const overlay = document.body.createDiv({ cls: 'claudian-image-modal-overlay' });
-    const modal = overlay.createDiv({ cls: 'claudian-image-modal' });
+    const overlay = document.body.createDiv({ cls: 'oc-image-modal-overlay' });
+    const modal = overlay.createDiv({ cls: 'oc-image-modal' });
 
     modal.createEl('img', {
       attr: {
@@ -310,7 +310,7 @@ export class ImageContextManager {
       },
     });
 
-    const closeBtn = modal.createDiv({ cls: 'claudian-image-modal-close' });
+    const closeBtn = modal.createDiv({ cls: 'oc-image-modal-close' });
     closeBtn.setText('\u00D7');
 
     const handleEsc = (e: KeyboardEvent) => {

@@ -1,7 +1,7 @@
 {
   "name": "cc-obsidian",
-  "version": "1.3.23",
-  "description": "Claudian - Claude Code embedded in Obsidian sidebar",
+  "version": "1.4.0",
+  "description": "ObsidianCode - Claude Code embedded in Obsidian sidebar",
   "main": "main.js",
   "scripts": {
     "build:css": "node scripts/build-css.mjs",

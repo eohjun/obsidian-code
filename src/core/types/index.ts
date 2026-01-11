@@ -1,5 +1,5 @@
 /**
- * Claudian - Type definitions barrel export.
+ * Obsidian Code - Type definitions barrel export.
  *
  * Re-exports all types from modular type files.
  */
@@ -14,7 +14,7 @@ export {
   type ImageMediaType,
   type StreamChunk,
   type UsageInfo,
-  VIEW_TYPE_CLAUDIAN,
+  VIEW_TYPE_OBSIDIAN_CODE,
 } from './chat';
 
 // Model types
@@ -37,7 +37,7 @@ export {
 
 // Settings types
 export {
-  type ClaudianSettings,
+  type ObsidianCodeSettings,
   DEFAULT_SETTINGS,
   type EnvSnippet,
   getBashToolBlockedCommands,
@@ -64,8 +64,8 @@ export {
 
 // MCP types
 export {
-  type ClaudianMcpConfigFile,
-  type ClaudianMcpServer,
+  type ObsidianCodeMcpConfigFile,
+  type ObsidianCodeMcpServer,
   DEFAULT_MCP_SERVER,
   getMcpServerType,
   inferMcpServerType,

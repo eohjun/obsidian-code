@@ -14,7 +14,7 @@ import type { App, Plugin } from 'obsidian';
 
 import type {
   ClaudeModel,
-  ClaudianSettings,
+  ObsidianCodeSettings,
   Conversation,
   SlashCommand,
 } from '../types';
@@ -25,7 +25,7 @@ import { SettingsStorage, type StoredSettings } from './SettingsStorage';
 import { COMMANDS_PATH, SlashCommandStorage } from './SlashCommandStorage';
 import { VaultFileAdapter } from './VaultFileAdapter';
 
-/** Base path for all Claudian storage. */
+/** Base path for all ObsidianCode storage. */
 export const CLAUDE_PATH = '.claude';
 
 /** Machine-specific state stored in Obsidian's data.json. */
@@ -45,7 +45,7 @@ const DEFAULT_STATE: PluginState = {
 };
 
 /** Legacy data format (pre-migration). */
-interface LegacyData extends ClaudianSettings {
+interface LegacyData extends ObsidianCodeSettings {
   conversations?: Conversation[];
   activeConversationId?: string;
   migrationVersion?: number;
@@ -83,12 +83,12 @@ export class StorageService {
     const settingsExist = await this.settings.exists();
     const legacyData = await this.loadLegacyData();
     if (legacyData && this.needsMigration(legacyData)) {
-      console.log('[Claudian] Migrating from legacy data.json to distributed storage...');
+      console.log('[ObsidianCode] Migrating from legacy data.json to distributed storage...');
       const migrated = await this.runMigration(legacyData, { migrateSettings: !settingsExist });
       if (migrated) {
-        console.log('[Claudian] Migration complete.');
+        console.log('[ObsidianCode] Migration complete.');
       } else {
-        console.warn('[Claudian] Migration incomplete; will retry on next launch.');
+        console.warn('[ObsidianCode] Migration incomplete; will retry on next launch.');
       }
     }
 
@@ -135,7 +135,7 @@ export class StorageService {
         await this.migrateSettings(legacyData);
       } catch (error) {
         hadErrors = true;
-        console.error('[Claudian] Failed to migrate settings:', error);
+        console.error('[ObsidianCode] Failed to migrate settings:', error);
       }
     }
 
@@ -242,7 +242,7 @@ export class StorageService {
         await this.commands.save(command);
       } catch (error) {
         hadErrors = true;
-        console.error(`[Claudian] Failed to migrate command ${command.name}:`, error);
+        console.error(`[ObsidianCode] Failed to migrate command ${command.name}:`, error);
       }
     }
     return hadErrors;
@@ -260,7 +260,7 @@ export class StorageService {
         await this.sessions.saveConversation(conversation);
       } catch (error) {
         hadErrors = true;
-        console.error(`[Claudian] Failed to migrate conversation ${conversation.id}:`, error);
+        console.error(`[ObsidianCode] Failed to migrate conversation ${conversation.id}:`, error);
       }
     }
     return hadErrors;

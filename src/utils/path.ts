@@ -1,5 +1,5 @@
 /**
- * Claudian - Path Utilities
+ * ObsidianCode - Path Utilities
  *
  * Path resolution, validation, and access control for vault operations.
  */

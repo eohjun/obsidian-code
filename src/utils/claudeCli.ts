@@ -1,5 +1,5 @@
 /**
- * Claudian - Claude CLI resolver
+ * ObsidianCode - Claude CLI resolver
  *
  * Shared resolver for Claude CLI path detection across services.
  */
@@ -49,13 +49,13 @@ export function resolveClaudeCliPath(customPath: string | undefined, envText: st
         if (stat.isFile()) {
           return expandedPath;
         }
-        console.warn(`Claudian: Custom CLI path is a directory, not a file: ${expandedPath}`);
+        console.warn(`ObsidianCode: Custom CLI path is a directory, not a file: ${expandedPath}`);
       } catch (error) {
         const message = error instanceof Error ? error.message : String(error);
-        console.warn(`Claudian: Custom CLI path not accessible: ${expandedPath} (${message})`);
+        console.warn(`ObsidianCode: Custom CLI path not accessible: ${expandedPath} (${message})`);
       }
     } else {
-      console.warn(`Claudian: Custom CLI path not found: ${expandedPath}`);
+      console.warn(`ObsidianCode: Custom CLI path not found: ${expandedPath}`);
     }
   }
 

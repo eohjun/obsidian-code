@@ -1,5 +1,5 @@
 /**
- * Claudian - Slash command settings
+ * ObsidianCode - Slash command settings
  *
  * Settings UI for managing slash commands with create/edit/delete/import/export.
  */
@@ -8,18 +8,18 @@ import type { App} from 'obsidian';
 import { Modal, Notice, setIcon, Setting } from 'obsidian';
 
 import type { SlashCommand } from '../../core/types';
-import type ClaudianPlugin from '../../main';
+import type ObsidianCodePlugin from '../../main';
 import { parseSlashCommandContent } from '../../utils/slashCommand';
 
 /** Modal for creating/editing slash commands. */
 export class SlashCommandModal extends Modal {
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
   private existingCmd: SlashCommand | null;
   private onSave: (cmd: SlashCommand) => void;
 
   constructor(
     app: App,
-    plugin: ClaudianPlugin,
+    plugin: ObsidianCodePlugin,
     existingCmd: SlashCommand | null,
     onSave: (cmd: SlashCommand) => void
   ) {
@@ -31,7 +31,7 @@ export class SlashCommandModal extends Modal {
 
   onOpen() {
     this.setTitle(this.existingCmd ? 'Edit Slash Command' : 'Add Slash Command');
-    this.modalEl.addClass('claudian-slash-modal');
+    this.modalEl.addClass('oc-slash-modal');
 
     const { contentEl } = this;
 
@@ -88,7 +88,7 @@ export class SlashCommandModal extends Modal {
       .setDesc('Use $ARGUMENTS, $1, $2, @file, !`bash`');
 
     const contentArea = contentEl.createEl('textarea', {
-      cls: 'claudian-slash-content-area',
+      cls: 'oc-slash-content-area',
       attr: {
         rows: '10',
         placeholder: 'Review this code for:\n$ARGUMENTS\n\n@$1',
@@ -100,17 +100,17 @@ export class SlashCommandModal extends Modal {
     contentArea.value = initialContent;
 
     // Button container
-    const buttonContainer = contentEl.createDiv({ cls: 'claudian-slash-modal-buttons' });
+    const buttonContainer = contentEl.createDiv({ cls: 'oc-slash-modal-buttons' });
 
     const cancelBtn = buttonContainer.createEl('button', {
       text: 'Cancel',
-      cls: 'claudian-cancel-btn',
+      cls: 'oc-cancel-btn',
     });
     cancelBtn.addEventListener('click', () => this.close());
 
     const saveBtn = buttonContainer.createEl('button', {
       text: 'Save',
-      cls: 'claudian-save-btn',
+      cls: 'oc-save-btn',
     });
     saveBtn.addEventListener('click', async () => {
       const name = nameInput.value.trim();
@@ -180,9 +180,9 @@ export class SlashCommandModal extends Modal {
 /** Component for managing slash commands in settings. */
 export class SlashCommandSettings {
   private containerEl: HTMLElement;
-  private plugin: ClaudianPlugin;
+  private plugin: ObsidianCodePlugin;
 
-  constructor(containerEl: HTMLElement, plugin: ClaudianPlugin) {
+  constructor(containerEl: HTMLElement, plugin: ObsidianCodePlugin) {
     this.containerEl = containerEl;
     this.plugin = plugin;
     this.render();
@@ -192,27 +192,27 @@ export class SlashCommandSettings {
     this.containerEl.empty();
 
     // Header with add button
-    const headerEl = this.containerEl.createDiv({ cls: 'claudian-slash-header' });
-    headerEl.createSpan({ text: 'Slash Commands', cls: 'claudian-slash-label' });
+    const headerEl = this.containerEl.createDiv({ cls: 'oc-slash-header' });
+    headerEl.createSpan({ text: 'Slash Commands', cls: 'oc-slash-label' });
 
-    const actionsEl = headerEl.createDiv({ cls: 'claudian-slash-header-actions' });
+    const actionsEl = headerEl.createDiv({ cls: 'oc-slash-header-actions' });
 
     const importBtn = actionsEl.createEl('button', {
-      cls: 'claudian-settings-action-btn',
+      cls: 'oc-settings-action-btn',
       attr: { 'aria-label': 'Import' },
     });
     setIcon(importBtn, 'download');
     importBtn.addEventListener('click', () => this.importCommands());
 
     const exportBtn = actionsEl.createEl('button', {
-      cls: 'claudian-settings-action-btn',
+      cls: 'oc-settings-action-btn',
       attr: { 'aria-label': 'Export' },
     });
     setIcon(exportBtn, 'upload');
     exportBtn.addEventListener('click', () => this.exportCommands());
 
     const addBtn = actionsEl.createEl('button', {
-      cls: 'claudian-settings-action-btn',
+      cls: 'oc-settings-action-btn',
       attr: { 'aria-label': 'Add' },
     });
     setIcon(addBtn, 'plus');
@@ -221,12 +221,12 @@ export class SlashCommandSettings {
     const commands = this.plugin.settings.slashCommands;
 
     if (commands.length === 0) {
-      const emptyEl = this.containerEl.createDiv({ cls: 'claudian-slash-empty-state' });
+      const emptyEl = this.containerEl.createDiv({ cls: 'oc-slash-empty-state' });
       emptyEl.setText('No slash commands configured. Click "Add" to create one.');
       return;
     }
 
-    const listEl = this.containerEl.createDiv({ cls: 'claudian-slash-list' });
+    const listEl = this.containerEl.createDiv({ cls: 'oc-slash-list' });
 
     for (const cmd of commands) {
       this.renderCommandItem(listEl, cmd);
@@ -234,36 +234,36 @@ export class SlashCommandSettings {
   }
 
   private renderCommandItem(listEl: HTMLElement, cmd: SlashCommand): void {
-    const itemEl = listEl.createDiv({ cls: 'claudian-slash-item-settings' });
+    const itemEl = listEl.createDiv({ cls: 'oc-slash-item-settings' });
 
-    const infoEl = itemEl.createDiv({ cls: 'claudian-slash-info' });
+    const infoEl = itemEl.createDiv({ cls: 'oc-slash-info' });
 
-    const headerRow = infoEl.createDiv({ cls: 'claudian-slash-item-header' });
+    const headerRow = infoEl.createDiv({ cls: 'oc-slash-item-header' });
 
-    const nameEl = headerRow.createSpan({ cls: 'claudian-slash-item-name' });
+    const nameEl = headerRow.createSpan({ cls: 'oc-slash-item-name' });
     nameEl.setText(`/${cmd.name}`);
 
     if (cmd.argumentHint) {
-      const hintEl = headerRow.createSpan({ cls: 'claudian-slash-item-hint' });
+      const hintEl = headerRow.createSpan({ cls: 'oc-slash-item-hint' });
       hintEl.setText(cmd.argumentHint);
     }
 
     if (cmd.description) {
-      const descEl = infoEl.createDiv({ cls: 'claudian-slash-item-desc' });
+      const descEl = infoEl.createDiv({ cls: 'oc-slash-item-desc' });
       descEl.setText(cmd.description);
     }
 
-    const actionsEl = itemEl.createDiv({ cls: 'claudian-slash-item-actions' });
+    const actionsEl = itemEl.createDiv({ cls: 'oc-slash-item-actions' });
 
     const editBtn = actionsEl.createEl('button', {
-      cls: 'claudian-settings-action-btn',
+      cls: 'oc-settings-action-btn',
       attr: { 'aria-label': 'Edit' },
     });
     setIcon(editBtn, 'pencil');
     editBtn.addEventListener('click', () => this.openCommandModal(cmd));
 
     const deleteBtn = actionsEl.createEl('button', {
-      cls: 'claudian-settings-action-btn claudian-settings-delete-btn',
+      cls: 'oc-settings-action-btn oc-settings-delete-btn',
       attr: { 'aria-label': 'Delete' },
     });
     setIcon(deleteBtn, 'trash-2');
@@ -329,7 +329,7 @@ export class SlashCommandSettings {
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = 'claudian-slash-commands.json';
+    a.download = 'oc-slash-commands.json';
     a.click();
     URL.revokeObjectURL(url);
     new Notice(`Exported ${commands.length} slash command(s)`);

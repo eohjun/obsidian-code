@@ -1,5 +1,5 @@
 /**
- * Claudian - File context manager
+ * ObsidianCode - File context manager
  *
  * Manages current note chip and @ mention dropdown.
  * Also handles MCP server @-mentions for context-saving mode.

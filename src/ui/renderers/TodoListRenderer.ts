@@ -1,5 +1,5 @@
 /**
- * Claudian - Todo list parser
+ * ObsidianCode - Todo list parser
  *
  * Parses TodoWrite tool input into typed todo items.
  */

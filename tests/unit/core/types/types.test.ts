@@ -1,18 +1,20 @@
 import type {
   ChatMessage,
-  ClaudianSettings,
+  ObsidianCodeSettings,
   Conversation,
   ConversationMeta,
-  EnvSnippet,  StreamChunk,
-  ToolCallInfo} from '@/core/types';
+  EnvSnippet, StreamChunk,
+  ToolCallInfo
+} from '@/core/types';
 import {
   DEFAULT_SETTINGS,
-  VIEW_TYPE_CLAUDIAN} from '@/core/types';
+  VIEW_TYPE_OBSIDIAN_CODE
+} from '@/core/types';
 
 describe('types.ts', () => {
-  describe('VIEW_TYPE_CLAUDIAN', () => {
+  describe('VIEW_TYPE_OBSIDIAN_CODE', () => {
     it('should be defined as the correct view type', () => {
-      expect(VIEW_TYPE_CLAUDIAN).toBe('claudian-view');
+      expect(VIEW_TYPE_OBSIDIAN_CODE).toBe('obsidian-code-view');
     });
   });
 
@@ -71,9 +73,9 @@ describe('types.ts', () => {
     });
   });
 
-  describe('ClaudianSettings type', () => {
+  describe('ObsidianCodeSettings type', () => {
     it('should be assignable with valid settings', () => {
-      const settings: ClaudianSettings = {
+      const settings: ObsidianCodeSettings = {
         userName: '',
         enableBlocklist: false,
         blockedCommands: { unix: ['test'], windows: ['test-win'] },
@@ -101,7 +103,7 @@ describe('types.ts', () => {
     });
 
     it('should accept custom model strings', () => {
-      const settings: ClaudianSettings = {
+      const settings: ObsidianCodeSettings = {
         userName: '',
         enableBlocklist: true,
         blockedCommands: { unix: [], windows: [] },
@@ -127,7 +129,7 @@ describe('types.ts', () => {
     });
 
     it('should accept optional lastClaudeModel and lastCustomModel', () => {
-      const settings: ClaudianSettings = {
+      const settings: ObsidianCodeSettings = {
         userName: '',
         enableBlocklist: true,
         blockedCommands: { unix: [], windows: [] },

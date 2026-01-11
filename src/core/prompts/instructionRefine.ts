@@ -1,5 +1,5 @@
 /**
- * Claudian - Instruction Refine System Prompt
+ * ObsidianCode - Instruction Refine System Prompt
  *
  * Builds the system prompt for instruction refinement.
  */

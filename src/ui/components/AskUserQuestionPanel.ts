@@ -15,7 +15,7 @@ export interface AskUserQuestionPanelResult {
 
 /** Options for creating the panel. */
 export interface AskUserQuestionPanelOptions {
-  /** Container element (the main claudian view container). */
+  /** Container element (the main ObsidianCode view container). */
   containerEl: HTMLElement;
   /** The questions to display. */
   input: AskUserQuestionInput;
@@ -30,8 +30,8 @@ function findInputElements(containerEl: HTMLElement): {
   inputContainer: HTMLElement | null;
   inputWrapper: HTMLElement | null;
 } {
-  const inputContainer = containerEl.querySelector('.claudian-input-container') as HTMLElement | null;
-  const inputWrapper = containerEl.querySelector('.claudian-input-wrapper') as HTMLElement | null;
+  const inputContainer = containerEl.querySelector('.oc-input-container') as HTMLElement | null;
+  const inputWrapper = containerEl.querySelector('.oc-input-wrapper') as HTMLElement | null;
   return { inputContainer, inputWrapper };
 }
 
@@ -93,7 +93,7 @@ export class AskUserQuestionPanel {
   /** Create the panel DOM structure. */
   private createPanel(): HTMLElement {
     const panel = document.createElement('div');
-    panel.className = 'claudian-ask-panel';
+    panel.className = 'oc-ask-panel';
     panel.setAttribute('tabindex', '0');
     panel.setAttribute('role', 'dialog');
     panel.setAttribute('aria-label', 'Claude is asking a question');
@@ -106,12 +106,12 @@ export class AskUserQuestionPanel {
 
     // Question content area
     this.questionContentEl = document.createElement('div');
-    this.questionContentEl.className = 'claudian-ask-panel-content';
+    this.questionContentEl.className = 'oc-ask-panel-content';
     panel.appendChild(this.questionContentEl);
 
     // Hint text
     const hintEl = document.createElement('div');
-    hintEl.className = 'claudian-ask-panel-hint';
+    hintEl.className = 'oc-ask-panel-hint';
     hintEl.textContent = 'Enter to select · Tab/Arrow keys to navigate · Esc to cancel';
     panel.appendChild(hintEl);
 
@@ -124,11 +124,11 @@ export class AskUserQuestionPanel {
   /** Create tab navigation row. */
   private createTabs(parent: HTMLElement): HTMLElement {
     const tabsContainer = document.createElement('div');
-    tabsContainer.className = 'claudian-ask-panel-tabs';
+    tabsContainer.className = 'oc-ask-panel-tabs';
 
     // Left arrow
     const leftArrow = document.createElement('span');
-    leftArrow.className = 'claudian-ask-panel-nav';
+    leftArrow.className = 'oc-ask-panel-nav';
     leftArrow.textContent = '←';
     leftArrow.addEventListener('click', () => this.navigateTab(-1));
     tabsContainer.appendChild(leftArrow);
@@ -136,12 +136,12 @@ export class AskUserQuestionPanel {
     // Question tabs
     this.questions.forEach((q, index) => {
       const tab = document.createElement('button');
-      tab.className = 'claudian-ask-panel-tab';
+      tab.className = 'oc-ask-panel-tab';
       tab.setAttribute('data-tab-index', String(index));
 
       // Status indicator (○ unanswered, ● answered)
       const check = document.createElement('span');
-      check.className = 'claudian-ask-panel-tab-check';
+      check.className = 'oc-ask-panel-tab-check';
       check.textContent = '○';
       tab.appendChild(check);
 
@@ -159,11 +159,11 @@ export class AskUserQuestionPanel {
 
     // Submit tab (as a proper tab)
     const submitTab = document.createElement('button');
-    submitTab.className = 'claudian-ask-panel-tab claudian-ask-panel-submit-tab';
+    submitTab.className = 'oc-ask-panel-tab oc-ask-panel-submit-tab';
     submitTab.setAttribute('data-tab-index', String(this.questions.length));
 
     const submitCheck = document.createElement('span');
-    submitCheck.className = 'claudian-ask-panel-tab-check';
+    submitCheck.className = 'oc-ask-panel-tab-check';
     submitCheck.textContent = '✓';
     submitTab.appendChild(submitCheck);
 
@@ -175,7 +175,7 @@ export class AskUserQuestionPanel {
 
     // Right arrow
     const rightArrow = document.createElement('span');
-    rightArrow.className = 'claudian-ask-panel-nav';
+    rightArrow.className = 'oc-ask-panel-nav';
     rightArrow.textContent = '→';
     rightArrow.addEventListener('click', () => this.navigateTab(1));
     tabsContainer.appendChild(rightArrow);
@@ -208,7 +208,7 @@ export class AskUserQuestionPanel {
 
     // Update tab active state
     if (this.tabsEl) {
-      const tabs = this.tabsEl.querySelectorAll('.claudian-ask-panel-tab');
+      const tabs = this.tabsEl.querySelectorAll('.oc-ask-panel-tab');
       tabs.forEach((tab, i) => {
         tab.classList.toggle('active', i === index);
       });
@@ -236,13 +236,13 @@ export class AskUserQuestionPanel {
 
     // Question text
     const questionTextEl = document.createElement('div');
-    questionTextEl.className = 'claudian-ask-panel-question';
+    questionTextEl.className = 'oc-ask-panel-question';
     questionTextEl.textContent = question.question;
     this.questionContentEl.appendChild(questionTextEl);
 
     // Options
     const optionsEl = document.createElement('div');
-    optionsEl.className = 'claudian-ask-panel-options';
+    optionsEl.className = 'oc-ask-panel-options';
     optionsEl.setAttribute('role', question.multiSelect ? 'group' : 'radiogroup');
 
     question.options.forEach((option, index) => {
@@ -267,27 +267,27 @@ export class AskUserQuestionPanel {
 
     // Title
     const titleEl = document.createElement('div');
-    titleEl.className = 'claudian-ask-panel-question';
+    titleEl.className = 'oc-ask-panel-question';
     titleEl.textContent = 'Review your answers';
     this.questionContentEl.appendChild(titleEl);
 
     // Summary of all answers
     const summaryEl = document.createElement('div');
-    summaryEl.className = 'claudian-ask-panel-summary';
+    summaryEl.className = 'oc-ask-panel-summary';
 
     this.questions.forEach((q) => {
       const itemEl = document.createElement('div');
-      itemEl.className = 'claudian-ask-panel-summary-item';
+      itemEl.className = 'oc-ask-panel-summary-item';
 
       // Question with bullet
       const questionEl = document.createElement('div');
-      questionEl.className = 'claudian-ask-panel-summary-question';
+      questionEl.className = 'oc-ask-panel-summary-question';
       questionEl.textContent = `● ${q.question}`;
       itemEl.appendChild(questionEl);
 
       // Answer (green)
       const answerEl = document.createElement('div');
-      answerEl.className = 'claudian-ask-panel-summary-answer';
+      answerEl.className = 'oc-ask-panel-summary-answer';
       const answer = this.answers.get(q.question);
       if (answer) {
         const answerText = Array.isArray(answer) ? answer.join(', ') : answer;
@@ -305,13 +305,13 @@ export class AskUserQuestionPanel {
 
     // Confirmation prompt
     const promptEl = document.createElement('div');
-    promptEl.className = 'claudian-ask-panel-submit-prompt';
+    promptEl.className = 'oc-ask-panel-submit-prompt';
     promptEl.textContent = 'Ready to submit your answers?';
     this.questionContentEl.appendChild(promptEl);
 
     // Options: Submit answers, Cancel
     const optionsEl = document.createElement('div');
-    optionsEl.className = 'claudian-ask-panel-options';
+    optionsEl.className = 'oc-ask-panel-options';
 
     // Submit option
     const submitOptionEl = this.createSubmitOption('Submit answers', 0, () => this.submit());
@@ -330,24 +330,24 @@ export class AskUserQuestionPanel {
   /** Create an option for the submit review. */
   private createSubmitOption(label: string, index: number, onClick: () => void): HTMLElement {
     const optionEl = document.createElement('div');
-    optionEl.className = 'claudian-ask-panel-option claudian-ask-panel-submit-option';
+    optionEl.className = 'oc-ask-panel-option oc-ask-panel-submit-option';
     optionEl.setAttribute('data-option-index', String(index));
 
     // Caret
     const caret = document.createElement('span');
-    caret.className = 'claudian-ask-panel-caret';
+    caret.className = 'oc-ask-panel-caret';
     caret.textContent = ' ';
     optionEl.appendChild(caret);
 
     // Number
     const indicator = document.createElement('span');
-    indicator.className = 'claudian-ask-panel-indicator';
+    indicator.className = 'oc-ask-panel-indicator';
     indicator.textContent = `${index + 1}.`;
     optionEl.appendChild(indicator);
 
     // Label
     const labelEl = document.createElement('span');
-    labelEl.className = 'claudian-ask-panel-option-label';
+    labelEl.className = 'oc-ask-panel-option-label';
     labelEl.textContent = label;
     optionEl.appendChild(labelEl);
 
@@ -364,9 +364,9 @@ export class AskUserQuestionPanel {
   private updateSubmitOptionFocus(): void {
     if (!this.questionContentEl) return;
 
-    const options = this.questionContentEl.querySelectorAll('.claudian-ask-panel-submit-option');
+    const options = this.questionContentEl.querySelectorAll('.oc-ask-panel-submit-option');
     options.forEach((opt, i) => {
-      const caret = opt.querySelector('.claudian-ask-panel-caret');
+      const caret = opt.querySelector('.oc-ask-panel-caret');
       const isFocused = i === this.currentOptionIndex;
       opt.classList.toggle('focused', isFocused);
       if (caret) {
@@ -382,18 +382,18 @@ export class AskUserQuestionPanel {
     index: number
   ): HTMLElement {
     const optionEl = document.createElement('div');
-    optionEl.className = 'claudian-ask-panel-option';
+    optionEl.className = 'oc-ask-panel-option';
     optionEl.setAttribute('data-option-index', String(index));
 
     // Focus caret indicator (> or space)
     const caret = document.createElement('span');
-    caret.className = 'claudian-ask-panel-caret';
+    caret.className = 'oc-ask-panel-caret';
     caret.textContent = ' ';
     optionEl.appendChild(caret);
 
     // Number/checkbox indicator
     const indicator = document.createElement('span');
-    indicator.className = 'claudian-ask-panel-indicator';
+    indicator.className = 'oc-ask-panel-indicator';
     if (question.multiSelect) {
       indicator.textContent = `${index + 1}. [ ]`;
     } else {
@@ -403,21 +403,21 @@ export class AskUserQuestionPanel {
 
     // Label and description
     const textContainer = document.createElement('div');
-    textContainer.className = 'claudian-ask-panel-option-text';
+    textContainer.className = 'oc-ask-panel-option-text';
 
     // Label row (contains label + checkmark for single-select)
     const labelRowEl = document.createElement('div');
-    labelRowEl.className = 'claudian-ask-panel-label-row';
+    labelRowEl.className = 'oc-ask-panel-label-row';
 
     const labelEl = document.createElement('span');
-    labelEl.className = 'claudian-ask-panel-option-label';
+    labelEl.className = 'oc-ask-panel-option-label';
     labelEl.textContent = option.label;
     labelRowEl.appendChild(labelEl);
 
     // Checkmark for single-select (shown after label when selected)
     if (!question.multiSelect) {
       const checkmarkEl = document.createElement('span');
-      checkmarkEl.className = 'claudian-ask-panel-checkmark';
+      checkmarkEl.className = 'oc-ask-panel-checkmark';
       checkmarkEl.textContent = '';
       labelRowEl.appendChild(checkmarkEl);
     }
@@ -426,7 +426,7 @@ export class AskUserQuestionPanel {
 
     if (option.description) {
       const descEl = document.createElement('div');
-      descEl.className = 'claudian-ask-panel-option-desc';
+      descEl.className = 'oc-ask-panel-option-desc';
       descEl.textContent = option.description;
       textContainer.appendChild(descEl);
     }
@@ -447,18 +447,18 @@ export class AskUserQuestionPanel {
     const otherIndex = question.options.length;
 
     const otherEl = document.createElement('div');
-    otherEl.className = 'claudian-ask-panel-option claudian-ask-panel-other';
+    otherEl.className = 'oc-ask-panel-option oc-ask-panel-other';
     otherEl.setAttribute('data-option-index', String(otherIndex));
 
     // Focus caret indicator
     const caret = document.createElement('span');
-    caret.className = 'claudian-ask-panel-caret';
+    caret.className = 'oc-ask-panel-caret';
     caret.textContent = ' ';
     otherEl.appendChild(caret);
 
     // Number/checkbox indicator
     const indicator = document.createElement('span');
-    indicator.className = 'claudian-ask-panel-indicator';
+    indicator.className = 'oc-ask-panel-indicator';
     if (question.multiSelect) {
       indicator.textContent = `${otherIndex + 1}. [ ]`;
     } else {
@@ -469,7 +469,7 @@ export class AskUserQuestionPanel {
     // Text input
     this.otherInputEl = document.createElement('input');
     this.otherInputEl.type = 'text';
-    this.otherInputEl.className = 'claudian-ask-panel-other-input';
+    this.otherInputEl.className = 'oc-ask-panel-other-input';
     this.otherInputEl.placeholder = 'Type something.';
 
     // Enter to submit from Other input
@@ -695,10 +695,10 @@ export class AskUserQuestionPanel {
     const answer = this.answers.get(questionKey);
     const answerArray = Array.isArray(answer) ? answer : (answer ? [answer] : []);
 
-    const options = this.questionContentEl.querySelectorAll('.claudian-ask-panel-option');
+    const options = this.questionContentEl.querySelectorAll('.oc-ask-panel-option');
     options.forEach((opt, i) => {
-      const caret = opt.querySelector('.claudian-ask-panel-caret');
-      const indicator = opt.querySelector('.claudian-ask-panel-indicator');
+      const caret = opt.querySelector('.oc-ask-panel-caret');
+      const indicator = opt.querySelector('.oc-ask-panel-indicator');
       const isFocused = i === this.currentOptionIndex;
 
       // Check if this option is selected
@@ -731,7 +731,7 @@ export class AskUserQuestionPanel {
 
       // Update checkmark for single-select (shown after label)
       if (!question.multiSelect) {
-        const checkmark = opt.querySelector('.claudian-ask-panel-checkmark');
+        const checkmark = opt.querySelector('.oc-ask-panel-checkmark');
         if (checkmark) {
           checkmark.textContent = isSelected ? ' ✓' : '';
         }
@@ -812,13 +812,13 @@ export class AskUserQuestionPanel {
   private updateTabIndicators(): void {
     if (!this.tabsEl) return;
 
-    const tabs = this.tabsEl.querySelectorAll('.claudian-ask-panel-tab');
+    const tabs = this.tabsEl.querySelectorAll('.oc-ask-panel-tab');
     this.questions.forEach((q, i) => {
       const hasAnswer = this.answers.has(q.question);
       const tab = tabs[i];
       if (tab) {
         tab.classList.toggle('answered', hasAnswer);
-        const check = tab.querySelector('.claudian-ask-panel-tab-check');
+        const check = tab.querySelector('.oc-ask-panel-tab-check');
         if (check) {
           check.textContent = hasAnswer ? '●' : '○';
         }

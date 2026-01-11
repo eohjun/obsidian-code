@@ -1,5 +1,5 @@
 /**
- * Claudian - Claude Agent SDK wrapper
+ * ObsidianCode - Claude Agent SDK wrapper
  *
  * Handles communication with Claude via the Agent SDK. Manages streaming,
  * session persistence, permission modes, and security hooks.
@@ -10,7 +10,7 @@ import { query as agentQuery } from '@anthropic-ai/claude-agent-sdk';
 import * as os from 'os';
 import * as path from 'path';
 
-import type ClaudianPlugin from '../../main';
+import type ObsidianCodePlugin from '../../main';
 import { stripCurrentNotePrefix } from '../../utils/context';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../utils/env';
 import { getPathAccessType, getVaultPath, normalizePathForFilesystem } from '../../utils/path';
@@ -198,8 +198,8 @@ export type ExitPlanModeCallback = (planContent: string) => Promise<ExitPlanMode
 export type EnterPlanModeCallback = () => Promise<void>;
 
 /** Service for interacting with Claude via the Agent SDK. */
-export class ClaudianService {
-  private plugin: ClaudianPlugin;
+export class ObsidianCodeService {
+  private plugin: ObsidianCodePlugin;
   private abortController: AbortController | null = null;
   private approvalCallback: ApprovalCallback | null = null;
   private askUserQuestionCallback: AskUserQuestionCallback | null = null;
@@ -218,7 +218,7 @@ export class ClaudianService {
   // Store AskUserQuestion answers by tool_use_id
   private askUserQuestionAnswers = new Map<string, Record<string, string | string[]>>();
 
-  constructor(plugin: ClaudianPlugin, mcpManager: McpServerManager) {
+  constructor(plugin: ObsidianCodePlugin, mcpManager: McpServerManager) {
     this.plugin = plugin;
     this.mcpManager = mcpManager;
 
@@ -425,7 +425,7 @@ export class ClaudianService {
       pathToClaudeCodeExecutable: cliPath,
       // Load project settings. Optionally load user settings if enabled.
       // Note: User settings (~/.claude/settings.json) may contain permission rules
-      // that bypass Claudian's permission system. Skills from ~/.claude/skills/
+      // that bypass ObsidianCode's permission system. Skills from ~/.claude/skills/
       // are still discovered regardless (not in settings.json).
       settingSources: this.plugin.settings.loadUserClaudeSettings
         ? ['user', 'project']

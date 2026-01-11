@@ -1,5 +1,5 @@
 /**
- * Claudian - Image cache management
+ * ObsidianCode - Image cache management
  *
  * Handles caching of pasted/dropped images with content-addressed storage.
  * Images are stored with SHA-256 hash filenames for deduplication.
@@ -13,7 +13,7 @@ import * as path from 'path';
 import { getVaultPath } from '../../utils/path';
 import type { ImageMediaType } from '../types';
 
-export const IMAGE_CACHE_DIR = '.claudian-cache/images';
+export const IMAGE_CACHE_DIR = '.oc-cache/images';
 
 /** Ensures the cache directory exists and returns its absolute path. */
 export function ensureImageCacheDir(app: App): string | null {

@@ -125,7 +125,7 @@ export interface KeyboardNavigationSettings {
 }
 
 /** Plugin settings persisted to disk. */
-export interface ClaudianSettings {
+export interface ObsidianCodeSettings {
   userName: string;
   enableBlocklist: boolean;
   blockedCommands: PlatformBlockedCommands;
@@ -152,7 +152,7 @@ export interface ClaudianSettings {
 }
 
 /** Default plugin settings. */
-export const DEFAULT_SETTINGS: ClaudianSettings = {
+export const DEFAULT_SETTINGS: ObsidianCodeSettings = {
   userName: '',
   enableBlocklist: true,
   blockedCommands: getDefaultBlockedCommands(),

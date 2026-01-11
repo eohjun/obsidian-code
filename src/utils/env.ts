@@ -1,5 +1,5 @@
 /**
- * Claudian - Environment Utilities
+ * ObsidianCode - Environment Utilities
  *
  * Environment variable parsing, model configuration, and PATH enhancement for GUI apps.
  */

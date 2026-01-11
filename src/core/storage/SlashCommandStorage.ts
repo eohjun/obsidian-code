@@ -44,11 +44,11 @@ export class SlashCommandStorage {
             commands.push(command);
           }
         } catch (error) {
-          console.error(`[Claudian] Failed to load command from ${filePath}:`, error);
+          console.error(`[ObsidianCode] Failed to load command from ${filePath}:`, error);
         }
       }
     } catch (error) {
-      console.error('[Claudian] Failed to list command files:', error);
+      console.error('[ObsidianCode] Failed to list command files:', error);
     }
 
     return commands;
@@ -60,7 +60,7 @@ export class SlashCommandStorage {
       const content = await this.adapter.read(filePath);
       return this.parseFile(content, filePath);
     } catch (error) {
-      console.error(`[Claudian] Failed to read command file ${filePath}:`, error);
+      console.error(`[ObsidianCode] Failed to read command file ${filePath}:`, error);
       return null;
     }
   }

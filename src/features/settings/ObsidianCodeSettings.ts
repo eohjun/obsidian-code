@@ -1,5 +1,5 @@
 /**
- * Claudian - Settings tab
+ * ObsidianCode - Settings tab
  *
  * Plugin settings UI for hotkeys, customization, safety, and environment variables.
  */
@@ -10,7 +10,7 @@ import { Notice, PluginSettingTab, Setting } from 'obsidian';
 
 import { getCurrentPlatformKey } from '../../core/types';
 import { DEFAULT_CLAUDE_MODELS } from '../../core/types/models';
-import type ClaudianPlugin from '../../main';
+import type ObsidianCodePlugin from '../../main';
 import { EnvSnippetManager, McpSettingsManager, SlashCommandSettings } from '../../ui';
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../utils/env';
 import { expandHomePath } from '../../utils/path';
@@ -29,7 +29,7 @@ function formatHotkey(hotkey: { modifiers: string[]; key: string }): string {
   return isMac ? [...mods, key].join('') : [...mods, key].join('+');
 }
 
-/** Open Obsidian's hotkey settings filtered to Claudian commands. */
+/** Open Obsidian's hotkey settings filtered to ObsidianCode commands. */
 function openHotkeySettings(app: App): void {
   const setting = (app as any).setting;
   setting.open();
@@ -41,7 +41,7 @@ function openHotkeySettings(app: App): void {
       // Handle both old and new Obsidian versions
       const searchEl = tab.searchInputEl ?? tab.searchComponent?.inputEl;
       if (searchEl) {
-        searchEl.value = 'Claudian';
+        searchEl.value = 'ObsidianCode';
         tab.updateHotkeyVisibility?.();
       }
     }
@@ -65,10 +65,10 @@ function getHotkeyForCommand(app: App, commandId: string): string | null {
 }
 
 /** Plugin settings tab displayed in Obsidian's settings pane. */
-export class ClaudianSettingTab extends PluginSettingTab {
-  plugin: ClaudianPlugin;
+export class ObsidianCodeSettingTab extends PluginSettingTab {
+  plugin: ObsidianCodePlugin;
 
-  constructor(app: App, plugin: ClaudianPlugin) {
+  constructor(app: App, plugin: ObsidianCodePlugin) {
     super(app, plugin);
     this.plugin = plugin;
   }
@@ -76,13 +76,13 @@ export class ClaudianSettingTab extends PluginSettingTab {
   display(): void {
     const { containerEl } = this;
     containerEl.empty();
-    containerEl.addClass('claudian-settings');
+    containerEl.addClass('oc-settings');
 
     // Customization section
     new Setting(containerEl).setName('Customization').setHeading();
 
     new Setting(containerEl)
-      .setName('What should Claudian call you?')
+      .setName('What should ObsidianCode call you?')
       .setDesc('Your name for personalized greetings (leave empty for generic greetings)')
       .addText((text) =>
         text
@@ -123,7 +123,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
             this.plugin.settings.mediaFolder = value.trim();
             await this.plugin.saveSettings();
           });
-        text.inputEl.addClass('claudian-settings-media-input');
+        text.inputEl.addClass('oc-settings-media-input');
       });
 
     new Setting(containerEl)
@@ -237,7 +237,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
     // Hotkeys section
     new Setting(containerEl).setName('Hotkeys').setHeading();
 
-    const inlineEditCommandId = 'claudian:inline-edit';
+    const inlineEditCommandId = 'cc-obsidian:inline-edit';
     const inlineEditHotkey = getHotkeyForCommand(this.app, inlineEditCommandId);
     new Setting(containerEl)
       .setName('Inline edit hotkey')
@@ -250,7 +250,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
           .onClick(() => openHotkeySettings(this.app))
       );
 
-    const openChatCommandId = 'claudian:open-view';
+    const openChatCommandId = 'cc-obsidian:open-view';
     const openChatHotkey = getHotkeyForCommand(this.app, openChatCommandId);
     new Setting(containerEl)
       .setName('Open chat hotkey')
@@ -266,25 +266,25 @@ export class ClaudianSettingTab extends PluginSettingTab {
     // Slash Commands section
     new Setting(containerEl).setName('Slash Commands').setHeading();
 
-    const slashCommandsDesc = containerEl.createDiv({ cls: 'claudian-slash-settings-desc' });
+    const slashCommandsDesc = containerEl.createDiv({ cls: 'oc-slash-settings-desc' });
     slashCommandsDesc.createEl('p', {
       text: 'Create custom prompt templates triggered by /command. Use $ARGUMENTS for all arguments, $1/$2 for positional args, @file for file content, and !`bash` for command output.',
       cls: 'setting-item-description',
     });
 
-    const slashCommandsContainer = containerEl.createDiv({ cls: 'claudian-slash-commands-container' });
+    const slashCommandsContainer = containerEl.createDiv({ cls: 'oc-slash-commands-container' });
     new SlashCommandSettings(slashCommandsContainer, this.plugin);
 
     // MCP Servers section
     new Setting(containerEl).setName('MCP Servers').setHeading();
 
-    const mcpDesc = containerEl.createDiv({ cls: 'claudian-mcp-settings-desc' });
+    const mcpDesc = containerEl.createDiv({ cls: 'oc-mcp-settings-desc' });
     mcpDesc.createEl('p', {
       text: 'Configure Model Context Protocol servers to extend Claude\'s capabilities with external tools and data sources. Servers with context-saving mode require @mention to activate.',
       cls: 'setting-item-description',
     });
 
-    const mcpContainer = containerEl.createDiv({ cls: 'claudian-mcp-container' });
+    const mcpContainer = containerEl.createDiv({ cls: 'oc-mcp-container' });
     new McpSettingsManager(mcpContainer, this.plugin);
 
     // Safety section
@@ -383,7 +383,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
         text.inputEl.cols = 40;
       });
 
-    const approvedDesc = containerEl.createDiv({ cls: 'claudian-approved-desc' });
+    const approvedDesc = containerEl.createDiv({ cls: 'oc-approved-desc' });
     approvedDesc.createEl('p', {
       text: 'Actions that have been permanently approved (via "Always Allow"). These will not require approval in Safe mode.',
       cls: 'setting-item-description',
@@ -392,28 +392,28 @@ export class ClaudianSettingTab extends PluginSettingTab {
     const permissions = this.plugin.settings.permissions;
 
     if (permissions.length === 0) {
-      const emptyEl = containerEl.createDiv({ cls: 'claudian-approved-empty' });
+      const emptyEl = containerEl.createDiv({ cls: 'oc-approved-empty' });
       emptyEl.setText('No approved actions yet. When you click "Always Allow" in the approval dialog, actions will appear here.');
     } else {
-      const listEl = containerEl.createDiv({ cls: 'claudian-approved-list' });
+      const listEl = containerEl.createDiv({ cls: 'oc-approved-list' });
 
       for (const action of permissions) {
-        const itemEl = listEl.createDiv({ cls: 'claudian-approved-item' });
+        const itemEl = listEl.createDiv({ cls: 'oc-approved-item' });
 
-        const infoEl = itemEl.createDiv({ cls: 'claudian-approved-item-info' });
+        const infoEl = itemEl.createDiv({ cls: 'oc-approved-item-info' });
 
-        const toolEl = infoEl.createSpan({ cls: 'claudian-approved-item-tool' });
+        const toolEl = infoEl.createSpan({ cls: 'oc-approved-item-tool' });
         toolEl.setText(action.toolName);
 
-        const patternEl = infoEl.createDiv({ cls: 'claudian-approved-item-pattern' });
+        const patternEl = infoEl.createDiv({ cls: 'oc-approved-item-pattern' });
         patternEl.setText(action.pattern);
 
-        const dateEl = infoEl.createSpan({ cls: 'claudian-approved-item-date' });
+        const dateEl = infoEl.createSpan({ cls: 'oc-approved-item-date' });
         dateEl.setText(new Date(action.approvedAt).toLocaleDateString());
 
         const removeBtn = itemEl.createEl('button', {
           text: 'Remove',
-          cls: 'claudian-approved-remove-btn',
+          cls: 'oc-approved-remove-btn',
         });
         removeBtn.addEventListener('click', async () => {
           this.plugin.settings.permissions =
@@ -454,11 +454,11 @@ export class ClaudianSettingTab extends PluginSettingTab {
           });
         text.inputEl.rows = 6;
         text.inputEl.cols = 50;
-        text.inputEl.addClass('claudian-settings-env-textarea');
+        text.inputEl.addClass('oc-settings-env-textarea');
       });
 
     // Environment Snippets subsection
-    const envSnippetsContainer = containerEl.createDiv({ cls: 'claudian-env-snippets-container' });
+    const envSnippetsContainer = containerEl.createDiv({ cls: 'oc-env-snippets-container' });
     new EnvSnippetManager(envSnippetsContainer, this.plugin);
 
     // Advanced section
@@ -473,7 +473,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
       .setDesc(cliPathDescription);
 
     // Create validation message element
-    const validationEl = containerEl.createDiv({ cls: 'claudian-cli-path-validation' });
+    const validationEl = containerEl.createDiv({ cls: 'oc-cli-path-validation' });
     validationEl.style.color = 'var(--text-error)';
     validationEl.style.fontSize = '0.85em';
     validationEl.style.marginTop = '-0.5em';
@@ -521,7 +521,7 @@ export class ClaudianSettingTab extends PluginSettingTab {
           this.plugin.cliResolver?.reset();
           this.plugin.agentService?.cleanup();
         });
-      text.inputEl.addClass('claudian-settings-cli-path-input');
+      text.inputEl.addClass('oc-settings-cli-path-input');
       text.inputEl.style.width = '100%';
 
       // Validate on initial load

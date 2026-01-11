@@ -1,4 +1,4 @@
-/** Claudian slash command core - barrel export. */
+/** ObsidianCode slash command core - barrel export. */
 
 export {
   type BashExpansionOptions,

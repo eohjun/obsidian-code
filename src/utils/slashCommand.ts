@@ -1,5 +1,5 @@
 /**
- * Claudian - Slash command utilities
+ * ObsidianCode - Slash command utilities
  *
  * Core parsing logic for slash command YAML frontmatter and warning formatting.
  */
