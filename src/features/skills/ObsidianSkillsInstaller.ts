@@ -384,6 +384,65 @@ export async function uninstallObsidianSkills(app: App): Promise<boolean> {
   }
 }
 
+/** Get the default branch of a GitHub repository */
+async function getRepoDefaultBranch(owner: string, repo: string): Promise<string> {
+  try {
+    const response = await requestUrl({
+      url: `https://api.github.com/repos/${owner}/${repo}`,
+      throw: false
+    });
+    if (response.status === 200) {
+      const data = JSON.parse(response.text);
+      return data.default_branch || 'main';
+    }
+  } catch (e) {
+    console.warn('Failed to fetch default branch, defaulting to main:', e);
+  }
+  return 'main';
+}
+
+/** Check if a raw URL exists */
+async function checkRawUrl(url: string): Promise<boolean> {
+  try {
+    const res = await requestUrl({ url, throw: false });
+    return res.status === 200;
+  } catch {
+    return false;
+  }
+}
+
+/** Find SKILL.md in a GitHub repository by searching common paths */
+async function findSkillInRepo(repoUrl: string): Promise<string | null> {
+  // Extract owner/repo from URL: https://github.com/owner/repo
+  const match = repoUrl.match(/github\.com\/([^/]+)\/([^/]+)/);
+  if (!match) return null;
+
+  const [, owner, repo] = match;
+  const cleanRepo = repo.replace(/\.git$/, '');
+
+  // Dynamic branch detection
+  const branch = await getRepoDefaultBranch(owner, cleanRepo);
+
+  // List of potential URL patterns to check
+  const candidates = [
+    // Root level SKILL.md
+    `https://raw.githubusercontent.com/${owner}/${cleanRepo}/${branch}/SKILL.md`,
+    // Inside a 'skill' or 'skills' directory
+    `https://raw.githubusercontent.com/${owner}/${cleanRepo}/${branch}/skill/SKILL.md`,
+    `https://raw.githubusercontent.com/${owner}/${cleanRepo}/${branch}/skills/SKILL.md`,
+    // Check for README.md if SKILL.md is missing (sometimes users put skill definition there)
+    `https://raw.githubusercontent.com/${owner}/${cleanRepo}/${branch}/README.md`,
+  ];
+
+  for (const url of candidates) {
+    if (await checkRawUrl(url)) {
+      return url;
+    }
+  }
+
+  return null;
+}
+
 /** Install a skill from a GitHub URL */
 export async function installSkillFromUrl(app: App, url: string): Promise<boolean> {
   const vaultPath = getVaultPath(app);
@@ -411,11 +470,16 @@ export async function installSkillFromUrl(app: App, url: string): Promise<boolea
           rawUrl = rawUrl.replace(/\/$/, '') + '/SKILL.md';
         }
       }
-      // Handle: https://github.com/user/repo -> assume main/SKILL.md
+      // Handle: https://github.com/user/repo -> search for SKILL.md in repo
       else {
-        // Remove trailing slash if present
-        const cleanUrl = url.replace(/\/$/, '');
-        rawUrl = `${cleanUrl.replace('github.com', 'raw.githubusercontent.com')}/main/SKILL.md`;
+        new Notice('Searching for SKILL.md in repository...');
+        const foundUrl = await findSkillInRepo(url);
+        if (foundUrl) {
+          rawUrl = foundUrl;
+        } else {
+          // Cannot find skill automatically
+          throw new Error('Could not find SKILL.md in the repository. Please provide a direct link to the SKILL.md file or check the default branch.');
+        }
       }
     }
 
