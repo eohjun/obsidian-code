@@ -305,6 +305,17 @@ Use the \`color\` property with values: \`1\`-\`6\` (preset colors) or hex codes
 - [Obsidian Canvas Documentation](https://help.obsidian.md/Plugins/Canvas)
 `;
 
+/** Installed skill information */
+export interface InstalledSkill {
+  name: string;
+  description: string;
+  path: string;
+  isBuiltIn: boolean;  // true for obsidian-markdown and json-canvas
+}
+
+/** Built-in skill names (bundled with the plugin) */
+const BUILT_IN_SKILLS = ['obsidian-markdown', 'json-canvas'];
+
 /** Check if obsidian skills are already installed */
 export function isObsidianSkillsInstalled(app: App): boolean {
   const vaultPath = getVaultPath(app);
@@ -312,6 +323,84 @@ export function isObsidianSkillsInstalled(app: App): boolean {
 
   const skillsPath = path.join(vaultPath, '.claude', 'skills', 'obsidian-markdown');
   return fs.existsSync(skillsPath);
+}
+
+/** Get all installed skills in the vault */
+export function getInstalledSkills(app: App): InstalledSkill[] {
+  const vaultPath = getVaultPath(app);
+  if (!vaultPath) return [];
+
+  const skillsBasePath = path.join(vaultPath, '.claude', 'skills');
+  if (!fs.existsSync(skillsBasePath)) return [];
+
+  const skills: InstalledSkill[] = [];
+
+  try {
+    const entries = fs.readdirSync(skillsBasePath, { withFileTypes: true });
+
+    for (const entry of entries) {
+      if (!entry.isDirectory()) continue;
+
+      const skillDir = path.join(skillsBasePath, entry.name);
+      const skillFilePath = path.join(skillDir, 'SKILL.md');
+
+      if (!fs.existsSync(skillFilePath)) continue;
+
+      // Read skill file to extract description
+      let description = '';
+      try {
+        const content = fs.readFileSync(skillFilePath, 'utf-8');
+        const descMatch = content.match(/^---\s*[\s\S]*?description:\s*([^\r\n]+)/);
+        if (descMatch && descMatch[1]) {
+          description = descMatch[1].trim();
+        }
+      } catch {
+        // Ignore read errors
+      }
+
+      skills.push({
+        name: entry.name,
+        description: description || 'No description available',
+        path: skillDir,
+        isBuiltIn: BUILT_IN_SKILLS.includes(entry.name),
+      });
+    }
+  } catch {
+    // Ignore directory read errors
+  }
+
+  // Sort: built-in skills first, then alphabetically
+  return skills.sort((a, b) => {
+    if (a.isBuiltIn && !b.isBuiltIn) return -1;
+    if (!a.isBuiltIn && b.isBuiltIn) return 1;
+    return a.name.localeCompare(b.name);
+  });
+}
+
+/** Remove a specific skill by name */
+export async function removeSkill(app: App, skillName: string): Promise<boolean> {
+  const vaultPath = getVaultPath(app);
+  if (!vaultPath) {
+    new Notice('Could not determine vault path');
+    return false;
+  }
+
+  try {
+    const skillPath = path.join(vaultPath, '.claude', 'skills', skillName);
+
+    if (!fs.existsSync(skillPath)) {
+      new Notice(`Skill "${skillName}" not found`);
+      return false;
+    }
+
+    fs.rmSync(skillPath, { recursive: true });
+    new Notice(`Skill "${skillName}" removed`);
+    return true;
+  } catch (error) {
+    console.error(`Failed to remove skill "${skillName}":`, error);
+    new Notice(`Failed to remove skill: ${error instanceof Error ? error.message : String(error)}`);
+    return false;
+  }
 }
 
 /** Install obsidian skills to the vault */

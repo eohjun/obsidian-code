@@ -15,7 +15,7 @@ import { EnvSnippetManager, McpSettingsManager, SlashCommandSettings } from '../
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../utils/env';
 import { expandHomePath } from '../../utils/path';
 import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
-import { installObsidianSkills, installSkillFromUrl, isObsidianSkillsInstalled, uninstallObsidianSkills } from '../skills/ObsidianSkillsInstaller';
+import { getInstalledSkills, installObsidianSkills, installSkillFromUrl, isObsidianSkillsInstalled, removeSkill, uninstallObsidianSkills } from '../skills/ObsidianSkillsInstaller';
 
 /** Format a hotkey for display (e.g., "Cmd+Shift+E" on Mac, "Ctrl+Shift+E" on Windows). */
 function formatHotkey(hotkey: { modifiers: string[]; key: string }): string {
@@ -238,13 +238,14 @@ export class ObsidianCodeSettingTab extends PluginSettingTab {
     // Obsidian Skills section
     new Setting(containerEl).setName('Obsidian Skills').setHeading();
 
-    const skillsInstalled = isObsidianSkillsInstalled(this.app);
     const skillsDesc = containerEl.createDiv({ cls: 'oc-skills-settings-desc' });
     skillsDesc.createEl('p', {
       text: 'Install Obsidian-specific skills to help Claude understand Obsidian Flavored Markdown, wikilinks, callouts, properties, and JSON Canvas format.',
       cls: 'setting-item-description',
     });
 
+    // Bundled Obsidian Skills (install/reinstall/remove)
+    const skillsInstalled = isObsidianSkillsInstalled(this.app);
     new Setting(containerEl)
       .setName('Obsidian Skills')
       .setDesc(skillsInstalled
@@ -281,14 +282,18 @@ export class ObsidianCodeSettingTab extends PluginSettingTab {
 
     // Install from GitHub
     let skillUrl = '';
+    let textInput: HTMLInputElement | null = null;
     new Setting(containerEl)
       .setName('Install Skill from GitHub')
       .setDesc('Enter a GitHub URL (repository URL or raw SKILL.md link) to install a custom skill.')
-      .addText(text => text
-        .setPlaceholder('https://github.com/username/repo')
-        .onChange(async (value) => {
-          skillUrl = value;
-        }))
+      .addText(text => {
+        textInput = text.inputEl;
+        text
+          .setPlaceholder('https://github.com/username/repo')
+          .onChange(async (value) => {
+            skillUrl = value;
+          });
+      })
       .addButton(btn => {
         btn.setButtonText('Install')
           .setCta()
@@ -301,13 +306,65 @@ export class ObsidianCodeSettingTab extends PluginSettingTab {
             btn.setButtonText('Installing...').setDisabled(true);
 
             try {
-              await installSkillFromUrl(this.app, skillUrl);
-              // Clear input would be nice but we don't have reference to text component here easily without restructuring
+              const success = await installSkillFromUrl(this.app, skillUrl);
+              if (success) {
+                // Clear input and refresh to show new skill
+                if (textInput) textInput.value = '';
+                skillUrl = '';
+                this.display();
+              }
             } finally {
               btn.setButtonText('Install').setDisabled(false);
             }
           });
       });
+
+    // Display all installed skills (including GitHub-installed ones)
+    const installedSkills = getInstalledSkills(this.app);
+
+    if (installedSkills.length > 0) {
+      const installedSkillsDesc = containerEl.createDiv({ cls: 'oc-skills-installed-desc' });
+      installedSkillsDesc.createEl('p', {
+        text: `Installed Skills (${installedSkills.length}):`,
+        cls: 'setting-item-description',
+      });
+
+      const skillsListEl = containerEl.createDiv({ cls: 'oc-skills-list' });
+
+      for (const skill of installedSkills) {
+        const skillItemEl = skillsListEl.createDiv({ cls: 'oc-skills-item' });
+
+        const skillInfoEl = skillItemEl.createDiv({ cls: 'oc-skills-item-info' });
+
+        const skillNameEl = skillInfoEl.createSpan({ cls: 'oc-skills-item-name' });
+        skillNameEl.setText(skill.name);
+
+        if (skill.isBuiltIn) {
+          const builtInBadge = skillInfoEl.createSpan({ cls: 'oc-skills-builtin-badge' });
+          builtInBadge.setText('Built-in');
+        }
+
+        const skillDescEl = skillInfoEl.createDiv({ cls: 'oc-skills-item-desc' });
+        skillDescEl.setText(skill.description.length > 100
+          ? skill.description.substring(0, 100) + '...'
+          : skill.description);
+
+        // Only show individual remove button for custom (non-built-in) skills
+        if (!skill.isBuiltIn) {
+          const removeBtn = skillItemEl.createEl('button', {
+            text: 'Remove',
+            cls: 'oc-skills-remove-btn',
+          });
+          removeBtn.addEventListener('click', async () => {
+            await removeSkill(this.app, skill.name);
+            this.display(); // Refresh
+          });
+        }
+      }
+    } else {
+      const emptyEl = containerEl.createDiv({ cls: 'oc-skills-empty' });
+      emptyEl.setText('No skills installed. Install Obsidian Skills above or add custom skills from GitHub.');
+    }
 
     // Hotkeys section
     new Setting(containerEl).setName('Hotkeys').setHeading();

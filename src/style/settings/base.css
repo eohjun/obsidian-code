@@ -25,7 +25,8 @@
 /* Custom section descriptions - align with items */
 .oc-slash-settings-desc,
 .oc-mcp-settings-desc,
-.oc-approved-desc {
+.oc-approved-desc,
+.oc-skills-settings-desc {
   padding: 0 12px;
 }
 
