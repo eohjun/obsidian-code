@@ -206,13 +206,8 @@ export class PermissionToggle {
 
     this.updateDisplay();
 
-    this.toggleEl.addEventListener('click', () => this.toggle());
-    // Container click while in plan mode (do not allow exit)
-    this.container.addEventListener('click', (e) => {
-      if (this.isPlanModeLocked() && e.target !== this.toggleEl) {
-        new Notice('Plan mode is active until the plan is approved.');
-      }
-    });
+    // Cycle modes on click anywhere on the container
+    this.container.addEventListener('click', () => this.toggle());
   }
 
   /** Set callback for plan mode toggle. */
@@ -241,42 +236,44 @@ export class PermissionToggle {
   updateDisplay() {
     if (!this.toggleEl || !this.labelEl) return;
 
-    // Plan mode takes precedence
-    if (this.isPlanModeActive()) {
-      this.toggleEl.removeClass('active');
+    this.container.removeClass('plan-mode');
+    this.labelEl.empty();
+
+    const mode = this.callbacks.getSettings().permissionMode;
+
+    if (mode === 'plan') {
       this.container.addClass('plan-mode');
-      // Show pause icon (two vertical bars) + "Plan Mode"
-      this.labelEl.empty();
+      this.toggleEl.removeClass('active');
+
       const iconEl = this.labelEl.createSpan({ cls: 'oc-plan-mode-icon' });
       iconEl.textContent = '▎▎';
       iconEl.style.fontSize = '0.8em';
       iconEl.style.letterSpacing = '-4px';
-      this.labelEl.createSpan({ text: 'Plan Mode' });
-      return;
-    }
-
-    this.container.removeClass('plan-mode');
-    const isYolo = this.callbacks.getSettings().permissionMode === 'yolo';
-
-    if (isYolo) {
+      this.labelEl.createSpan({ text: 'Plan' });
+    } else if (mode === 'yolo') {
       this.toggleEl.addClass('active');
+      this.labelEl.setText('AUTO');
     } else {
+      // Safe / Normal
       this.toggleEl.removeClass('active');
+      this.labelEl.setText('Safe');
     }
-
-    this.labelEl.setText(isYolo ? 'AUTO' : 'Safe');
   }
 
   private async toggle() {
-    // If in plan mode, do not allow exit
-    if (this.isPlanModeLocked()) {
-      new Notice('Plan mode is active until the plan is approved.');
-      return;
+    // Cycle: Auto (yolo) -> Plan -> Safe (normal)
+    const current = this.callbacks.getSettings().permissionMode;
+    let next: PermissionMode;
+
+    if (current === 'yolo') {
+      next = 'plan';
+    } else if (current === 'plan') {
+      next = 'normal';
+    } else {
+      next = 'yolo';
     }
 
-    const current = this.callbacks.getSettings().permissionMode;
-    const newMode: PermissionMode = current === 'yolo' ? 'normal' : 'yolo';
-    await this.callbacks.onPermissionModeChange(newMode);
+    await this.callbacks.onPermissionModeChange(next);
     this.updateDisplay();
   }
 

@@ -65,7 +65,13 @@
 }
 
 .oc-permission-toggle.plan-mode .oc-toggle-switch {
-  display: none;
+  display: block;
+  background: rgba(0, 168, 157, 0.2);
+}
+
+.oc-permission-toggle.plan-mode .oc-toggle-switch::after {
+  transform: translateX(7px);
+  background: #00A89D;
 }
 
 .oc-plan-mode-icon {
