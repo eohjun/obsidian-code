@@ -180,7 +180,8 @@ export class FileContextManager {
       return;
     }
 
-    this.state.attachFile(normalizedPath);
+    // Pin the file so it won't be replaced when opening other notes
+    this.state.pinFile(normalizedPath);
     this.refreshAllChips();
   }
 
@@ -189,16 +190,26 @@ export class FileContextManager {
     const normalizedPath = this.normalizePathForVault(file.path);
     if (!normalizedPath) return;
 
-    if (!this.state.isSessionStarted()) {
-      this.state.clearAttachments();
-      if (!this.hasExcludedTag(file)) {
-        this.currentNotePath = normalizedPath;
-        this.state.attachFile(normalizedPath);
-      } else {
-        this.currentNotePath = null;
-      }
-      this.refreshCurrentNoteChip();
+    // If there are pinned files, don't auto-change current note
+    // User must explicitly attach new notes via command or @-mention
+    if (this.state.hasPinnedFiles()) {
+      return;
     }
+
+    // Also don't change if session has started (backward compatibility)
+    if (this.state.isSessionStarted()) {
+      return;
+    }
+
+    // Clear non-pinned attachments and set new current note
+    this.state.clearNonPinnedAttachments();
+    if (!this.hasExcludedTag(file)) {
+      this.currentNotePath = normalizedPath;
+      this.state.attachFile(normalizedPath);
+    } else {
+      this.currentNotePath = null;
+    }
+    this.refreshCurrentNoteChip();
   }
 
   markFilesCacheDirty() {
@@ -265,10 +276,11 @@ export class FileContextManager {
     this.refreshAllChips();
   }
 
-  /** Refreshes all file chips (current note + attached files). */
+  /** Refreshes all file chips (current note + attached files + pinned status). */
   private refreshAllChips(): void {
     this.chipsView.renderCurrentNote(this.currentNotePath);
     this.chipsView.setAttachedFiles(this.state.getAttachedFiles());
+    this.chipsView.setPinnedFiles(this.state.getPinnedFiles());
     this.callbacks.onChipsChanged?.();
   }
 

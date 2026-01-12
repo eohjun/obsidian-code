@@ -18,6 +18,8 @@ export class FileChipsView {
   private currentNotePath: string | null = null;
   /** Additional attached file paths (shown after current note). */
   private attachedPaths: Set<string> = new Set();
+  /** Pinned file paths (won't be auto-replaced). */
+  private pinnedPaths: Set<string> = new Set();
 
   constructor(containerEl: HTMLElement, callbacks: FileChipsViewCallbacks) {
     this.containerEl = containerEl;
@@ -46,6 +48,12 @@ export class FileChipsView {
     this.renderAllChips();
   }
 
+  /** Updates the list of pinned files. */
+  setPinnedFiles(paths: Set<string>): void {
+    this.pinnedPaths = new Set(paths);
+    this.renderAllChips();
+  }
+
   /** Add a single attached file. */
   addAttachedFile(path: string): void {
     this.attachedPaths.add(path);
@@ -61,6 +69,7 @@ export class FileChipsView {
   /** Clear all attached files. */
   clearAttachedFiles(): void {
     this.attachedPaths.clear();
+    this.pinnedPaths.clear();
     this.renderAllChips();
   }
 
@@ -92,30 +101,38 @@ export class FileChipsView {
 
     for (const filePath of pathsToShow) {
       const isCurrentNote = filePath === this.currentNotePath;
-      this.renderFileChip(filePath, isCurrentNote, () => {
+      const isPinned = this.pinnedPaths.has(filePath);
+      this.renderFileChip(filePath, isCurrentNote, isPinned, () => {
         this.callbacks.onRemoveAttachment(filePath);
       });
     }
   }
 
-  private renderFileChip(filePath: string, isCurrentNote: boolean, onRemove: () => void): void {
+  private renderFileChip(filePath: string, isCurrentNote: boolean, isPinned: boolean, onRemove: () => void): void {
     const chipEl = this.fileIndicatorEl.createDiv({ cls: 'oc-file-chip' });
 
     // Add visual distinction for current note vs attached files
-    if (isCurrentNote) {
+    if (isCurrentNote && !isPinned) {
       chipEl.addClass('oc-file-chip-current');
+    } else if (isPinned) {
+      chipEl.addClass('oc-file-chip-pinned');
     } else {
       chipEl.addClass('oc-file-chip-attached');
     }
 
     const iconEl = chipEl.createSpan({ cls: 'oc-file-chip-icon' });
-    setIcon(iconEl, 'file-text');
+    // Use pin icon for pinned files, file icon for others
+    if (isPinned) {
+      setIcon(iconEl, 'pin');
+    } else {
+      setIcon(iconEl, 'file-text');
+    }
 
     const normalizedPath = filePath.replace(/\\/g, '/');
     const filename = normalizedPath.split('/').pop() || filePath;
     const nameEl = chipEl.createSpan({ cls: 'oc-file-chip-name' });
     nameEl.setText(filename);
-    nameEl.setAttribute('title', filePath);
+    nameEl.setAttribute('title', isPinned ? `📌 ${filePath} (pinned)` : filePath);
 
     const removeEl = chipEl.createSpan({ cls: 'oc-file-chip-remove' });
     removeEl.setText('\u00D7');

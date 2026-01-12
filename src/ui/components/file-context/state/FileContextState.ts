@@ -9,6 +9,8 @@ function escapeRegExp(str: string): string {
 
 export class FileContextState {
   private attachedFiles: Set<string> = new Set();
+  /** Files that are explicitly attached (via command or @-mention) and won't be replaced. */
+  private pinnedFiles: Set<string> = new Set();
   private sessionStarted = false;
   private mentionedMcpServers: Set<string> = new Set();
   private currentNoteSent = false;
@@ -17,6 +19,15 @@ export class FileContextState {
 
   getAttachedFiles(): Set<string> {
     return new Set(this.attachedFiles);
+  }
+
+  getPinnedFiles(): Set<string> {
+    return new Set(this.pinnedFiles);
+  }
+
+  /** Check if there are any pinned files. */
+  hasPinnedFiles(): boolean {
+    return this.pinnedFiles.size > 0;
   }
 
   hasSentCurrentNote(): boolean {
@@ -39,6 +50,7 @@ export class FileContextState {
     this.sessionStarted = false;
     this.currentNoteSent = false;
     this.attachedFiles.clear();
+    this.pinnedFiles.clear();
     this.contextFileMap.clear();
     this.clearMcpMentions();
   }
@@ -46,6 +58,7 @@ export class FileContextState {
   resetForLoadedConversation(hasMessages: boolean): void {
     this.currentNoteSent = hasMessages;
     this.attachedFiles.clear();
+    this.pinnedFiles.clear();
     this.contextFileMap.clear();
     this.sessionStarted = hasMessages;
     this.clearMcpMentions();
@@ -62,19 +75,46 @@ export class FileContextState {
     this.attachedFiles.add(path);
   }
 
+  /** Pin a file (explicitly attached, won't be auto-replaced). */
+  pinFile(path: string): void {
+    this.attachedFiles.add(path);
+    this.pinnedFiles.add(path);
+  }
+
+  /** Check if a file is pinned. */
+  isPinned(path: string): boolean {
+    return this.pinnedFiles.has(path);
+  }
+
   /** Attach a context file with display name to absolute path mapping. */
   attachContextFile(displayName: string, absolutePath: string): void {
     this.attachedFiles.add(absolutePath);
+    this.pinnedFiles.add(absolutePath);  // Context files are always pinned
     this.contextFileMap.set(displayName, absolutePath);
   }
 
   detachFile(path: string): void {
     this.attachedFiles.delete(path);
+    this.pinnedFiles.delete(path);
   }
 
   clearAttachments(): void {
     this.attachedFiles.clear();
     this.contextFileMap.clear();
+    // Note: pinnedFiles are NOT cleared here - they persist until new conversation
+  }
+
+  /** Clear only non-pinned attachments (for when opening new files). */
+  clearNonPinnedAttachments(): void {
+    const toRemove: string[] = [];
+    for (const file of this.attachedFiles) {
+      if (!this.pinnedFiles.has(file)) {
+        toRemove.push(file);
+      }
+    }
+    for (const file of toRemove) {
+      this.attachedFiles.delete(file);
+    }
   }
 
   /** Transform text by replacing context file display names with absolute paths. */

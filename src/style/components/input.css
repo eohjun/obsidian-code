@@ -140,6 +140,17 @@
   opacity: 0.9;
 }
 
+/* Pinned file chip (won't be auto-replaced) */
+.oc-file-chip.oc-file-chip-pinned {
+  border-color: var(--interactive-accent);
+  border-width: 2px;
+  background: color-mix(in srgb, var(--interactive-accent) 15%, transparent);
+}
+
+.oc-file-chip.oc-file-chip-pinned .oc-file-chip-icon {
+  color: var(--interactive-accent);
+}
+
 /* Message Queue Indicator (shown below flavor text in thinking indicator) */
 .oc-queue-indicator {
   display: none;
