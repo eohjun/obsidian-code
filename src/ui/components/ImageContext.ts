@@ -82,8 +82,22 @@ export class ImageContextManager {
   }
 
   private setupDragAndDrop() {
-    const inputWrapper = this.containerEl.querySelector('.oc-input-wrapper') as HTMLElement;
-    if (!inputWrapper) return;
+    // Find input wrapper - it could be inside containerEl or containerEl itself might have the class
+    let inputWrapper = this.containerEl.querySelector('.oc-input-wrapper') as HTMLElement;
+
+    // If not found as child, check if containerEl itself is the wrapper or a parent has it
+    if (!inputWrapper) {
+      // Maybe the containerEl IS the input-container, and we need to wait or check differently
+      const parent = this.containerEl.closest('.oc-input-container') as HTMLElement;
+      if (parent) {
+        inputWrapper = parent.querySelector('.oc-input-wrapper') as HTMLElement;
+      }
+    }
+
+    if (!inputWrapper) {
+      console.warn('[ImageContext] Input wrapper not found, drag and drop disabled');
+      return;
+    }
 
     this.dropOverlay = inputWrapper.createDiv({ cls: 'oc-drop-overlay' });
     const dropContent = this.dropOverlay.createDiv({ cls: 'oc-drop-content' });
