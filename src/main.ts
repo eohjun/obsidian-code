@@ -105,6 +105,28 @@ export default class ObsidianCodePlugin extends Plugin {
       },
     });
 
+    this.addCommand({
+      id: 'attach-current-note',
+      name: 'Attach current note to chat',
+      checkCallback: (checking: boolean) => {
+        const activeFile = this.app.workspace.getActiveFile();
+        if (!activeFile) return false;
+
+        if (checking) return true;
+
+        // Open chat view if not already open
+        this.activateView().then(() => {
+          const chatView = this.getView();
+          if (chatView?.fileContextManager) {
+            const normalizedPath = activeFile.path.replace(/\\/g, '/');
+            chatView.fileContextManager.attachFileFromCommand(normalizedPath);
+            new Notice(`Attached: ${activeFile.name}`);
+          }
+        });
+        return true;
+      },
+    });
+
     this.addSettingTab(new ObsidianCodeSettingTab(this.app, this));
   }
 

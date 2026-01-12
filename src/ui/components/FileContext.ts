@@ -170,6 +170,20 @@ export class FileContextManager {
     }
   }
 
+  /** Attaches a file from a command (e.g., "Attach current note to chat"). */
+  attachFileFromCommand(filePath: string): void {
+    const normalizedPath = this.normalizePathForVault(filePath);
+    if (!normalizedPath) return;
+
+    // Skip if already attached
+    if (this.state.getAttachedFiles().has(normalizedPath)) {
+      return;
+    }
+
+    this.state.attachFile(normalizedPath);
+    this.refreshAllChips();
+  }
+
   /** Handles file open event. */
   handleFileOpen(file: TFile) {
     const normalizedPath = this.normalizePathForVault(file.path);
