@@ -37,7 +37,6 @@ export {
 
 // Settings types
 export {
-  type ObsidianCodeSettings,
   DEFAULT_SETTINGS,
   type EnvSnippet,
   getBashToolBlockedCommands,
@@ -47,6 +46,7 @@ export {
   type InstructionRefineResult,
   type KeyboardNavigationSettings,
   type NonPlanPermissionMode,
+  type ObsidianCodeSettings,
   type Permission,
   type PermissionMode,
   type PlatformBlockedCommands,
@@ -64,8 +64,6 @@ export {
 
 // MCP types
 export {
-  type ObsidianCodeMcpConfigFile,
-  type ObsidianCodeMcpServer,
   DEFAULT_MCP_SERVER,
   getMcpServerType,
   inferMcpServerType,
@@ -76,6 +74,8 @@ export {
   type McpServerType,
   type McpSSEServerConfig,
   type McpStdioServerConfig,
+  type ObsidianCodeMcpConfigFile,
+  type ObsidianCodeMcpServer,
   type ParsedMcpConfig,
 } from './mcp';
 

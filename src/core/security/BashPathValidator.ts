@@ -14,6 +14,80 @@ export type PathViolation =
   | { type: 'outside_vault'; path: string }
   | { type: 'export_path_read'; path: string };
 
+/** Result of a dangerous construct check */
+export type DangerousConstruct =
+  | { type: 'command_substitution'; pattern: string }
+  | { type: 'backtick_substitution'; pattern: string }
+  | { type: 'dangerous_builtin'; command: string }
+  | { type: 'hex_escape'; pattern: string }
+  | { type: 'process_substitution'; pattern: string };
+
+/**
+ * Check if a command contains dangerous bash constructs that could bypass security.
+ * These constructs allow arbitrary command execution or path obfuscation.
+ *
+ * @param command - The bash command to check
+ * @returns The dangerous construct found, or null if command is safe
+ */
+export function findDangerousConstruct(command: string): DangerousConstruct | null {
+  if (!command) return null;
+
+  // $(...) command substitution - can execute arbitrary commands
+  const cmdSubMatch = command.match(/\$\([^)]+\)/);
+  if (cmdSubMatch) {
+    return { type: 'command_substitution', pattern: cmdSubMatch[0] };
+  }
+
+  // Backtick substitution - legacy form of command substitution
+  // We need to be careful: backticks inside single quotes are literal
+  // Simple heuristic: check for backticks not preceded by single quote context
+  const backtickMatch = command.match(/`[^`]+`/);
+  if (backtickMatch) {
+    // Check if this backtick is inside single quotes (rough heuristic)
+    const beforeMatch = command.slice(0, command.indexOf(backtickMatch[0]));
+    const singleQuotes = (beforeMatch.match(/'/g) || []).length;
+    // If odd number of single quotes before, we're inside a single-quoted string
+    if (singleQuotes % 2 === 0) {
+      return { type: 'backtick_substitution', pattern: backtickMatch[0] };
+    }
+  }
+
+  // Dangerous builtins that can execute arbitrary code
+  // \b ensures word boundary matching
+  const dangerousBuiltins = /\b(eval|exec|source)\s+/;
+  const builtinMatch = command.match(dangerousBuiltins);
+  if (builtinMatch) {
+    return { type: 'dangerous_builtin', command: builtinMatch[1] };
+  }
+
+  // Dot command (. script) - sources a script
+  // Must be at start or after ; && || | with space before path
+  const dotCommandMatch = command.match(/(?:^|[;&|]\s*)\.\s+\S/);
+  if (dotCommandMatch) {
+    return { type: 'dangerous_builtin', command: '.' };
+  }
+
+  // ANSI-C quoting with hex escapes - can obfuscate paths/commands
+  // $'\xNN' or $'\NNN' (octal)
+  const hexEscapeMatch = command.match(/\$'[^']*\\x[0-9a-fA-F]{2}[^']*'/);
+  if (hexEscapeMatch) {
+    return { type: 'hex_escape', pattern: hexEscapeMatch[0] };
+  }
+
+  const octalEscapeMatch = command.match(/\$'[^']*\\[0-7]{3}[^']*'/);
+  if (octalEscapeMatch) {
+    return { type: 'hex_escape', pattern: octalEscapeMatch[0] };
+  }
+
+  // Process substitution <(...) or >(...)
+  const procSubMatch = command.match(/[<>]\([^)]+\)/);
+  if (procSubMatch) {
+    return { type: 'process_substitution', pattern: procSubMatch[0] };
+  }
+
+  return null;
+}
+
 /** Context for path validation - allows dependency injection of access rules */
 export interface PathCheckContext {
   getPathAccessType: (filePath: string) => PathAccessType;

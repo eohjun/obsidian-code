@@ -7,8 +7,9 @@
 import type { HookCallbackMatcher } from '@anthropic-ai/claude-agent-sdk';
 
 import type { PathAccessType } from '../../utils/path';
+import { extractBashCommand, extractToolInput, extractToolName, isHookToolInput } from '../sdk/typeGuards';
 import type { PathCheckContext } from '../security/BashPathValidator';
-import { findBashCommandPathViolation } from '../security/BashPathValidator';
+import { findBashCommandPathViolation, findDangerousConstruct } from '../security/BashPathValidator';
 import { isCommandBlocked } from '../security/BlocklistChecker';
 import { getPathFromToolInput } from '../tools/toolInput';
 import { isEditTool, isFileTool, TOOL_BASH } from '../tools/toolNames';
@@ -33,11 +34,10 @@ export function createBlocklistHook(getContext: () => BlocklistContext): HookCal
     matcher: TOOL_BASH,
     hooks: [
       async (hookInput) => {
-        const input = hookInput as {
-          tool_name: string;
-          tool_input: { command?: string };
-        };
-        const command = input.tool_input?.command || '';
+        if (!isHookToolInput(hookInput)) {
+          return { continue: true };
+        }
+        const command = extractBashCommand(hookInput);
         const context = getContext();
 
         const bashToolCommands = getBashToolBlockedCommands(context.blockedCommands);
@@ -65,16 +65,48 @@ export function createVaultRestrictionHook(context: VaultRestrictionContext): Ho
   return {
     hooks: [
       async (hookInput) => {
-        const input = hookInput as {
-          tool_name: string;
-          tool_input: Record<string, unknown>;
-        };
+        if (!isHookToolInput(hookInput)) {
+          return { continue: true };
+        }
 
-        const toolName = input.tool_name;
+        const toolName = extractToolName(hookInput);
 
-        // Bash: inspect command for paths that escape the vault
+        // Bash: inspect command for dangerous constructs and paths that escape the vault
         if (toolName === TOOL_BASH) {
-          const command = (input.tool_input?.command as string) || '';
+          const command = extractBashCommand(hookInput);
+
+          // First, check for dangerous bash constructs that could bypass security
+          const dangerousConstruct = findDangerousConstruct(command);
+          if (dangerousConstruct) {
+            let reason: string;
+            switch (dangerousConstruct.type) {
+              case 'command_substitution':
+                reason = `Access denied: Command substitution "${dangerousConstruct.pattern}" is not allowed as it could execute arbitrary code.`;
+                break;
+              case 'backtick_substitution':
+                reason = `Access denied: Backtick substitution "${dangerousConstruct.pattern}" is not allowed as it could execute arbitrary code.`;
+                break;
+              case 'dangerous_builtin':
+                reason = `Access denied: The "${dangerousConstruct.command}" command is not allowed as it could execute arbitrary code.`;
+                break;
+              case 'hex_escape':
+                reason = `Access denied: Hex/octal escape sequences "${dangerousConstruct.pattern}" are not allowed as they could obfuscate malicious paths.`;
+                break;
+              case 'process_substitution':
+                reason = `Access denied: Process substitution "${dangerousConstruct.pattern}" is not allowed as it could execute arbitrary code.`;
+                break;
+            }
+            return {
+              continue: false,
+              hookSpecificOutput: {
+                hookEventName: 'PreToolUse' as const,
+                permissionDecision: 'deny' as const,
+                permissionDecisionReason: reason,
+              },
+            };
+          }
+
+          // Then check for path violations
           const pathCheckContext: PathCheckContext = {
             getPathAccessType: (p) => context.getPathAccessType(p),
           };
@@ -102,7 +134,8 @@ export function createVaultRestrictionHook(context: VaultRestrictionContext): Ho
         }
 
         // Get the path from tool input
-        const filePath = getPathFromToolInput(toolName, input.tool_input);
+        const toolInput = extractToolInput(hookInput);
+        const filePath = getPathFromToolInput(toolName, toolInput);
 
         if (filePath) {
           const accessType = context.getPathAccessType(filePath);

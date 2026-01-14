@@ -12,10 +12,9 @@ import { ObsidianCodeService } from './core/agent/ObsidianCodeService';
 import { deleteCachedImages } from './core/images/imageCache';
 import { StorageService } from './core/storage';
 import type {
-  ObsidianCodeSettings,
   Conversation,
-  ConversationMeta
-} from './core/types';
+  ConversationMeta,
+  ObsidianCodeSettings} from './core/types';
 import {
   DEFAULT_CLAUDE_MODELS,
   DEFAULT_SETTINGS,
@@ -132,6 +131,7 @@ export default class ObsidianCodePlugin extends Plugin {
 
   onunload() {
     this.agentService.cleanup();
+    this.cliResolver.reset();
   }
 
   /** Opens the ObsidianCode sidebar view, creating it if necessary. */

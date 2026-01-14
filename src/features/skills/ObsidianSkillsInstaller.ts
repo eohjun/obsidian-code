@@ -5,10 +5,9 @@
  */
 
 import * as fs from 'fs';
-import * as path from 'path';
-
 import type { App } from 'obsidian';
 import { Notice, requestUrl } from 'obsidian';
+import * as path from 'path';
 
 import { getVaultPath } from '../../utils/path';
 

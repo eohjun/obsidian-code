@@ -727,3 +727,119 @@ export function getPathAccessType(
   if (bestFlags.export) return 'export';
   return 'none';
 }
+
+// ============================================
+// Symlink Detection (TOCTOU Mitigation)
+// ============================================
+
+/**
+ * Information about a symlink in a path.
+ */
+export interface SymlinkInfo {
+  /** The path that is a symlink */
+  symlinkPath: string;
+  /** The resolved target of the symlink */
+  resolvedTarget: string;
+  /** Whether the entire path is a symlink or just a component */
+  isDirectSymlink: boolean;
+}
+
+/**
+ * Check if a path or any of its components is a symbolic link.
+ * Returns symlink information if found, null otherwise.
+ *
+ * This helps with TOCTOU mitigation by detecting symlinks that could be
+ * modified between check and use operations.
+ *
+ * @param candidatePath - The path to check
+ * @returns SymlinkInfo if any symlink is found, null otherwise
+ */
+export function detectSymlink(candidatePath: string): SymlinkInfo | null {
+  if (!candidatePath) return null;
+
+  const normalized = normalizePathForFilesystem(candidatePath);
+  const absolute = path.isAbsolute(normalized) ? normalized : path.resolve(normalized);
+
+  // Check if the path itself is a symlink
+  try {
+    const stat = fs.lstatSync(absolute);
+    if (stat.isSymbolicLink()) {
+      const resolved = fs.realpathSync(absolute);
+      return {
+        symlinkPath: absolute,
+        resolvedTarget: resolved,
+        isDirectSymlink: true,
+      };
+    }
+  } catch {
+    // Path doesn't exist or is inaccessible
+  }
+
+  // Check each component of the path for symlinks
+  const parts = absolute.split(path.sep).filter(Boolean);
+  let currentPath = process.platform === 'win32' ? '' : '/';
+
+  for (const part of parts) {
+    currentPath = path.join(currentPath, part);
+
+    // On Windows, the first part might be a drive letter (e.g., "C:")
+    if (process.platform === 'win32' && part.endsWith(':')) {
+      currentPath = part + path.sep;
+      continue;
+    }
+
+    try {
+      const stat = fs.lstatSync(currentPath);
+      if (stat.isSymbolicLink()) {
+        const resolved = fs.realpathSync(currentPath);
+        return {
+          symlinkPath: currentPath,
+          resolvedTarget: resolved,
+          isDirectSymlink: currentPath === absolute,
+        };
+      }
+    } catch {
+      // Component doesn't exist or is inaccessible, stop checking
+      break;
+    }
+  }
+
+  return null;
+}
+
+/**
+ * Check if a path is safe from symlink-based attacks.
+ * Logs a warning if a symlink is detected.
+ *
+ * @param candidatePath - The path to check
+ * @param vaultPath - The vault path (used to check if symlink target is within vault)
+ * @returns true if the path is safe (no symlink or symlink target is within vault), false otherwise
+ */
+export function isSymlinkSafe(candidatePath: string, vaultPath: string): boolean {
+  const symlinkInfo = detectSymlink(candidatePath);
+
+  if (!symlinkInfo) {
+    return true; // No symlink found
+  }
+
+  // Check if the resolved target is within the vault
+  const targetWithinVault = isPathWithinVault(symlinkInfo.resolvedTarget, vaultPath);
+
+  if (!targetWithinVault) {
+    console.warn(
+      `ObsidianCode: Symlink detected pointing outside vault.\n` +
+        `  Symlink: ${symlinkInfo.symlinkPath}\n` +
+        `  Target: ${symlinkInfo.resolvedTarget}`
+    );
+    return false;
+  }
+
+  // Symlink exists but target is within vault - log info level
+  console.debug(
+    `ObsidianCode: Symlink detected (target within vault).\n` +
+      `  Symlink: ${symlinkInfo.symlinkPath}\n` +
+      `  Target: ${symlinkInfo.resolvedTarget}`
+  );
+
+  return true;
+}

@@ -15,6 +15,7 @@ import { stripCurrentNotePrefix } from '../../utils/context';
 import { getEnhancedPath, parseEnvironmentVariables } from '../../utils/env';
 import { getPathAccessType, getVaultPath, normalizePathForFilesystem } from '../../utils/path';
 import { buildContextFromHistory, getLastUserMessage, isSessionExpiredError } from '../../utils/session';
+import { TtlMap } from '../../utils/TtlMap';
 import {
   createBlocklistHook,
   createFileHashPostHook,
@@ -215,8 +216,8 @@ export class ObsidianCodeService {
   private diffStore = new DiffStore();
   private mcpManager: McpServerManager;
 
-  // Store AskUserQuestion answers by tool_use_id
-  private askUserQuestionAnswers = new Map<string, Record<string, string | string[]>>();
+  // Store AskUserQuestion answers by tool_use_id with 5-minute TTL
+  private askUserQuestionAnswers = new TtlMap<string, Record<string, string | string[]>>(5 * 60 * 1000);
 
   constructor(plugin: ObsidianCodePlugin, mcpManager: McpServerManager) {
     this.plugin = plugin;
@@ -601,6 +602,7 @@ export class ObsidianCodeService {
   cleanup() {
     this.cancel();
     this.resetSession();
+    this.askUserQuestionAnswers.dispose();
   }
 
   /** Sets the approval callback for UI prompts. */
@@ -750,13 +752,9 @@ export class ObsidianCodeService {
     }
   }
 
-  /** Get stored AskUserQuestion answers for a tool_use_id. */
+  /** Get stored AskUserQuestion answers for a tool_use_id (removes after retrieval). */
   getAskUserQuestionAnswers(toolUseId: string): Record<string, string | string[]> | undefined {
-    const answers = this.askUserQuestionAnswers.get(toolUseId);
-    if (answers) {
-      this.askUserQuestionAnswers.delete(toolUseId);
-    }
-    return answers;
+    return this.askUserQuestionAnswers.getAndDelete(toolUseId);
   }
 
   /**
@@ -783,7 +781,7 @@ export class ObsidianCodeService {
    */
   private async handleExitPlanModeTool(
     input: Record<string, unknown>,
-    toolUseId?: string
+    _toolUseId?: string
   ): Promise<PermissionResult> {
     if (!this.exitPlanModeCallback) {
       return {

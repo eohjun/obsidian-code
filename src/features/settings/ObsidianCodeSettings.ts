@@ -14,8 +14,8 @@ import type ObsidianCodePlugin from '../../main';
 import { EnvSnippetManager, McpSettingsManager, SlashCommandSettings } from '../../ui';
 import { getModelsFromEnvironment, parseEnvironmentVariables } from '../../utils/env';
 import { expandHomePath } from '../../utils/path';
-import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
 import { getInstalledSkills, installObsidianSkills, installSkillFromUrl, isObsidianSkillsInstalled, removeSkill, uninstallObsidianSkills } from '../skills/ObsidianSkillsInstaller';
+import { buildNavMappingText, parseNavMappings } from './keyboardNavigation';
 
 /** Format a hotkey for display (e.g., "Cmd+Shift+E" on Mac, "Ctrl+Shift+E" on Windows). */
 function formatHotkey(hotkey: { modifiers: string[]; key: string }): string {
