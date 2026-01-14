@@ -79,7 +79,7 @@ describe('ObsidianCodePlugin', () => {
 
       expect((plugin.addRibbonIcon as jest.Mock)).toHaveBeenCalledWith(
         'bot',
-        'Open cc-obsidian',
+        'Open Obsidian Code',
         expect.any(Function)
       );
     });
