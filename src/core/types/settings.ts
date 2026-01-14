@@ -149,6 +149,7 @@ export interface ObsidianCodeSettings {
   keyboardNavigation: KeyboardNavigationSettings;
   claudeCliPath: string;  // Custom Claude CLI path (empty = auto-detect)
   loadUserClaudeSettings: boolean;  // Load ~/.claude/settings.json (may override permissions)
+  autoIncludeActiveNote: boolean;  // Always include currently active note in context
 }
 
 /** Default plugin settings. */
@@ -180,6 +181,7 @@ export const DEFAULT_SETTINGS: ObsidianCodeSettings = {
   },
   claudeCliPath: '',  // Empty = auto-detect
   loadUserClaudeSettings: true,  // Default on for compatibility
+  autoIncludeActiveNote: false,  // Default off - enable to always include active note
 };
 
 /** Result from instruction refinement agent query. */

@@ -221,6 +221,15 @@ export class InputController {
     const currentNotePath = fileContextManager?.getCurrentNotePath() || null;
     const shouldSendCurrentNote = fileContextManager?.shouldSendCurrentNote(currentNotePath) ?? false;
 
+    // Auto-include active note: always get the currently viewed file
+    let activeNotePath: string | null = null;
+    if (plugin.settings.autoIncludeActiveNote) {
+      const activeFile = plugin.app.workspace.getActiveFile();
+      if (activeFile) {
+        activeNotePath = activeFile.path;
+      }
+    }
+
     const editorContextOverride = options?.editorContextOverride;
     const editorContext = editorContextOverride !== undefined
       ? editorContextOverride
@@ -235,9 +244,11 @@ export class InputController {
       promptToSend = prependEditorContext(promptToSend, editorContext);
     }
 
-    if (shouldSendCurrentNote && currentNotePath) {
-      promptToSend = prependCurrentNote(promptToSend, currentNotePath);
-      currentNoteForMessage = currentNotePath;
+    // Determine which note to include: active note (if auto-include) or traditional current note
+    const notePathToSend = activeNotePath || (shouldSendCurrentNote ? currentNotePath : null);
+    if (notePathToSend) {
+      promptToSend = prependCurrentNote(promptToSend, notePathToSend);
+      currentNoteForMessage = notePathToSend;
     }
 
     if (options?.promptPrefix) {
@@ -519,8 +530,14 @@ export class InputController {
       currentNote = fileContextManager?.getCurrentNotePath() || null;
     }
     shouldSendCurrentNote = fileContextManager?.shouldSendCurrentNote(currentNote) ?? false;
-    if (shouldSendCurrentNote && currentNote) {
-      currentNoteForMessage = currentNote;
+
+    // Auto-include active note: always get the currently viewed file
+    let activeNotePath: string | null = null;
+    if (plugin.settings.autoIncludeActiveNote) {
+      const activeFile = plugin.app.workspace.getActiveFile();
+      if (activeFile) {
+        activeNotePath = activeFile.path;
+      }
     }
 
     const editorContext = options?.editorContext ?? selectionController.getContext();
@@ -537,9 +554,11 @@ ${content}
       promptToSend = prependEditorContext(promptToSend, editorContext);
     }
 
-    if (shouldSendCurrentNote && currentNote) {
-      promptToSend = prependCurrentNote(promptToSend, currentNote);
-      currentNoteForMessage = currentNote;
+    // Determine which note to include: active note (if auto-include) or traditional current note
+    const notePathToSend = activeNotePath || (shouldSendCurrentNote ? currentNote : null);
+    if (notePathToSend) {
+      promptToSend = prependCurrentNote(promptToSend, notePathToSend);
+      currentNoteForMessage = notePathToSend;
     }
 
     fileContextManager?.markCurrentNoteSent();

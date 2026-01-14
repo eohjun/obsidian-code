@@ -114,6 +114,18 @@ export class ObsidianCodeSettingTab extends PluginSettingTab {
       });
 
     new Setting(containerEl)
+      .setName('Auto-include active note')
+      .setDesc('Always include the currently viewed note in context when sending messages')
+      .addToggle((toggle) =>
+        toggle
+          .setValue(this.plugin.settings.autoIncludeActiveNote)
+          .onChange(async (value) => {
+            this.plugin.settings.autoIncludeActiveNote = value;
+            await this.plugin.saveSettings();
+          })
+      );
+
+    new Setting(containerEl)
       .setName('Media folder')
       .setDesc('Folder containing attachments/images. When notes use ![[image.jpg]], Claude will look here. Leave empty for vault root.')
       .addText((text) => {
