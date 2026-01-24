@@ -294,6 +294,7 @@ export class ObsidianCodeView extends ItemView {
           onSelect: () => { },
           onHide: () => { },
           getCommands: () => this.plugin.settings.slashCommands,
+          reloadCommands: () => this.plugin.reloadSlashCommands(),
         }
       );
     }

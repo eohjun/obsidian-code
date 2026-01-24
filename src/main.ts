@@ -240,6 +240,12 @@ export default class ObsidianCodePlugin extends Plugin {
     });
   }
 
+  /** Reloads slash commands from global and vault paths. */
+  async reloadSlashCommands(): Promise<void> {
+    const slashCommands = await this.storage.commands.loadAll();
+    this.settings.slashCommands = slashCommands;
+  }
+
   /** Updates and persists environment variables, notifying if restart is needed. */
   async applyEnvironmentVariables(envText: string): Promise<void> {
     this.settings.environmentVariables = envText;
