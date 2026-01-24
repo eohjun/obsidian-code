@@ -154,12 +154,10 @@ export class SlashCommandDropdown {
     const allCommands = this.callbacks.getCommands();
     const searchLower = searchText.toLowerCase();
 
-    this.filteredCommands = allCommands
-      .filter(cmd =>
-        cmd.name.toLowerCase().includes(searchLower) ||
-        cmd.description?.toLowerCase().includes(searchLower)
-      )
-      .slice(0, 10);
+    this.filteredCommands = allCommands.filter(cmd =>
+      cmd.name.toLowerCase().includes(searchLower) ||
+      cmd.description?.toLowerCase().includes(searchLower)
+    );
 
     if (searchText.length > 0 && this.filteredCommands.length === 0) {
       this.hide();
