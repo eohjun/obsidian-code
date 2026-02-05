@@ -12,6 +12,7 @@ export interface SlashCommandDropdownCallbacks {
   onSelect: (command: SlashCommand) => void;
   onHide: () => void;
   getCommands: () => SlashCommand[];
+  reloadCommands?: () => Promise<void>;  // Reload commands from global/vault paths
 }
 
 /** Options for dropdown configuration. */
@@ -55,6 +56,11 @@ export class SlashCommandDropdown {
 
     // Find the last / before cursor
     const lastSlashIndex = textBeforeCursor.lastIndexOf('/');
+
+    // Reload commands when / is detected (fire-and-forget)
+    if (lastSlashIndex !== -1 && this.callbacks.reloadCommands) {
+      this.callbacks.reloadCommands().catch(() => {});
+    }
 
     if (lastSlashIndex === -1) {
       this.hide();
@@ -154,12 +160,10 @@ export class SlashCommandDropdown {
     const allCommands = this.callbacks.getCommands();
     const searchLower = searchText.toLowerCase();
 
-    this.filteredCommands = allCommands
-      .filter(cmd =>
-        cmd.name.toLowerCase().includes(searchLower) ||
-        cmd.description?.toLowerCase().includes(searchLower)
-      )
-      .slice(0, 10);
+    this.filteredCommands = allCommands.filter(cmd =>
+      cmd.name.toLowerCase().includes(searchLower) ||
+      cmd.description?.toLowerCase().includes(searchLower)
+    );
 
     if (searchText.length > 0 && this.filteredCommands.length === 0) {
       this.hide();

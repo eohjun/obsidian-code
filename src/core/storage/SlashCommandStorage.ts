@@ -1,8 +1,10 @@
 /**
  * SlashCommandStorage - Handles slash command files in vault/.claude/commands/
+ * and global ~/.claude/commands/
  *
  * Each command is stored as a Markdown file with YAML frontmatter.
  * Supports nested folders for organization.
+ * Vault commands take precedence over global commands with the same name.
  *
  * File format:
  * ```markdown
@@ -18,6 +20,10 @@
  * ```
  */
 
+import * as fs from 'fs';
+import * as os from 'os';
+import * as path from 'path';
+
 import { parseSlashCommandContent } from '../../utils/slashCommand';
 import type { ClaudeModel, SlashCommand } from '../types';
 import type { VaultFileAdapter } from './VaultFileAdapter';
@@ -25,13 +31,34 @@ import type { VaultFileAdapter } from './VaultFileAdapter';
 /** Path to commands folder relative to vault root. */
 export const COMMANDS_PATH = '.claude/commands';
 
+/** Path to global commands folder. */
+export const GLOBAL_COMMANDS_PATH = path.join(os.homedir(), '.claude', 'commands');
+
+/** Path to installed plugins JSON file. */
+const INSTALLED_PLUGINS_PATH = path.join(os.homedir(), '.claude', 'plugins', 'installed_plugins.json');
+
+/** Structure of installed_plugins.json */
+interface InstalledPluginsFile {
+  version: number;
+  plugins: Record<string, Array<{ installPath: string }>>;
+}
+
 export class SlashCommandStorage {
   constructor(private adapter: VaultFileAdapter) {}
 
-  /** Load all commands from .claude/commands/ recursively. */
+  /**
+   * Load all commands from plugins, global (~/.claude/commands/), and vault (.claude/commands/).
+   * Priority: vault > global > plugins (vault overrides all)
+   */
   async loadAll(): Promise<SlashCommand[]> {
-    const commands: SlashCommand[] = [];
+    // Load plugin commands first (lowest priority)
+    const pluginCommands = this.loadAllFromPlugins();
 
+    // Load global commands
+    const globalCommands = this.loadAllFromGlobal();
+
+    // Load vault commands (highest priority)
+    const vaultCommands: SlashCommand[] = [];
     try {
       const files = await this.adapter.listFilesRecursive(COMMANDS_PATH);
 
@@ -41,17 +68,180 @@ export class SlashCommandStorage {
         try {
           const command = await this.loadFromFile(filePath);
           if (command) {
-            commands.push(command);
+            vaultCommands.push(command);
           }
         } catch (error) {
           console.error(`[ObsidianCode] Failed to load command from ${filePath}:`, error);
         }
       }
     } catch (error) {
-      console.error('[ObsidianCode] Failed to list command files:', error);
+      console.error('[ObsidianCode] Failed to list vault command files:', error);
+    }
+
+    // Merge with priority: vault > global > plugins
+    const vaultNames = new Set(vaultCommands.map(c => c.name));
+    const globalNames = new Set(globalCommands.map(c => c.name));
+
+    const mergedCommands = [
+      ...pluginCommands.filter((c: SlashCommand) => !globalNames.has(c.name) && !vaultNames.has(c.name)),
+      ...globalCommands.filter((c: SlashCommand) => !vaultNames.has(c.name)),
+      ...vaultCommands,
+    ];
+
+    return mergedCommands;
+  }
+
+  /**
+   * Load commands from global ~/.claude/commands/ directory.
+   * Uses Node.js fs module since this is outside the vault.
+   */
+  private loadAllFromGlobal(): SlashCommand[] {
+    const commands: SlashCommand[] = [];
+
+    if (!fs.existsSync(GLOBAL_COMMANDS_PATH)) {
+      return commands;
+    }
+
+    try {
+      const files = this.listFilesRecursiveSync(GLOBAL_COMMANDS_PATH);
+
+      for (const filePath of files) {
+        if (!filePath.endsWith('.md')) continue;
+
+        try {
+          const content = fs.readFileSync(filePath, 'utf-8');
+          const relativePath = path.relative(GLOBAL_COMMANDS_PATH, filePath);
+          const command = this.parseFileFromGlobal(content, relativePath);
+          if (command) {
+            commands.push(command);
+          }
+        } catch (error) {
+          console.error(`[ObsidianCode] Failed to load global command from ${filePath}:`, error);
+        }
+      }
+    } catch (error) {
+      console.error('[ObsidianCode] Failed to list global command files:', error);
     }
 
     return commands;
+  }
+
+  /**
+   * Load commands from installed Claude Code plugins.
+   * Reads ~/.claude/plugins/installed_plugins.json and scans each plugin's commands/ folder.
+   */
+  private loadAllFromPlugins(): SlashCommand[] {
+    const commands: SlashCommand[] = [];
+
+    if (!fs.existsSync(INSTALLED_PLUGINS_PATH)) {
+      return commands;
+    }
+
+    try {
+      const content = fs.readFileSync(INSTALLED_PLUGINS_PATH, 'utf-8');
+      const pluginsFile = JSON.parse(content) as InstalledPluginsFile;
+
+      if (!pluginsFile.plugins || typeof pluginsFile.plugins !== 'object') {
+        return commands;
+      }
+
+      // Iterate over all installed plugins
+      for (const [pluginId, installations] of Object.entries(pluginsFile.plugins)) {
+        if (!Array.isArray(installations) || installations.length === 0) continue;
+
+        // Use the first installation (most plugins have only one)
+        const installation = installations[0];
+        if (!installation.installPath) continue;
+
+        const commandsDir = path.join(installation.installPath, 'commands');
+        if (!fs.existsSync(commandsDir)) continue;
+
+        // Load all .md files from the plugin's commands folder
+        const files = this.listFilesRecursiveSync(commandsDir);
+        for (const filePath of files) {
+          if (!filePath.endsWith('.md')) continue;
+
+          try {
+            const fileContent = fs.readFileSync(filePath, 'utf-8');
+            const relativePath = path.relative(commandsDir, filePath);
+            const command = this.parseFileFromPlugin(fileContent, relativePath, pluginId);
+            if (command) {
+              commands.push(command);
+            }
+          } catch (error) {
+            console.error(`[ObsidianCode] Failed to load plugin command from ${filePath}:`, error);
+          }
+        }
+      }
+    } catch (error) {
+      console.error('[ObsidianCode] Failed to load plugin commands:', error);
+    }
+
+    return commands;
+  }
+
+  /**
+   * Parse a command file from a plugin into a SlashCommand object.
+   */
+  private parseFileFromPlugin(content: string, relativePath: string, pluginId: string): SlashCommand {
+    const parsed = parseSlashCommandContent(content);
+    const name = relativePath.replace(/\.md$/, '');
+    // Extract plugin name from pluginId (e.g., "bkit@bkit-marketplace" -> "bkit")
+    const pluginName = pluginId.split('@')[0];
+    const id = `plugin-${pluginName}-${name.replace(/-/g, '-_').replace(/\//g, '--')}`;
+
+    return {
+      id,
+      name,
+      description: parsed.description ? `[${pluginName}] ${parsed.description}` : `[${pluginName}]`,
+      argumentHint: parsed.argumentHint,
+      allowedTools: parsed.allowedTools,
+      model: parsed.model as ClaudeModel | undefined,
+      content: parsed.promptContent,
+    };
+  }
+
+  /**
+   * Recursively list all files in a directory (sync version for global path).
+   */
+  private listFilesRecursiveSync(dir: string): string[] {
+    const files: string[] = [];
+
+    const processDir = (currentDir: string) => {
+      if (!fs.existsSync(currentDir)) return;
+
+      const entries = fs.readdirSync(currentDir, { withFileTypes: true });
+      for (const entry of entries) {
+        const fullPath = path.join(currentDir, entry.name);
+        if (entry.isDirectory()) {
+          processDir(fullPath);
+        } else if (entry.isFile()) {
+          files.push(fullPath);
+        }
+      }
+    };
+
+    processDir(dir);
+    return files;
+  }
+
+  /**
+   * Parse a command file from global path into a SlashCommand object.
+   */
+  private parseFileFromGlobal(content: string, relativePath: string): SlashCommand {
+    const parsed = parseSlashCommandContent(content);
+    const name = relativePath.replace(/\.md$/, '');
+    const id = `global-cmd-${name.replace(/-/g, '-_').replace(/\//g, '--')}`;
+
+    return {
+      id,
+      name,
+      description: parsed.description,
+      argumentHint: parsed.argumentHint,
+      allowedTools: parsed.allowedTools,
+      model: parsed.model as ClaudeModel | undefined,
+      content: parsed.promptContent,
+    };
   }
 
   /** Load a single command from a file path. */
