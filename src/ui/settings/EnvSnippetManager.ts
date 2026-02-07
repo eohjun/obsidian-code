@@ -234,8 +234,9 @@ export class EnvSnippetManager {
       await this.plugin.applyEnvironmentVariables(snippetContent);
 
       // Trigger model selector refresh if it exists
-      const view = this.plugin.app.workspace.getLeavesOfType('oc-view')[0]?.view as any;
-      if (view?.modelSelector) {
+      const leaf = this.plugin.app.workspace.getLeavesOfType('oc-view')[0];
+      const view = leaf?.view as Record<string, any> | undefined;
+      if (view && typeof view.modelSelector?.updateDisplay === 'function') {
         view.modelSelector.updateDisplay();
         view.modelSelector.renderOptions();
       }
@@ -246,8 +247,9 @@ export class EnvSnippetManager {
       this.render();
 
       // Trigger model selector refresh if it exists
-      const view = this.plugin.app.workspace.getLeavesOfType('oc-view')[0]?.view as any;
-      if (view?.modelSelector) {
+      const leaf = this.plugin.app.workspace.getLeavesOfType('oc-view')[0];
+      const view = leaf?.view as Record<string, any> | undefined;
+      if (view && typeof view.modelSelector?.updateDisplay === 'function') {
         view.modelSelector.updateDisplay();
         view.modelSelector.renderOptions();
       }

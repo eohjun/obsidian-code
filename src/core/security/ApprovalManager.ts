@@ -126,6 +126,8 @@ function isPathPrefixMatch(actionPath: string, approvedPath: string): boolean {
  */
 export class ApprovalManager {
   private sessionApprovedActions: Permission[] = [];
+  /** Fast O(1) lookup for exact tool+pattern matches (e.g., Bash commands). */
+  private sessionExactKeys = new Set<string>();
   private persistCallback: PersistApprovalCallback | null = null;
   private getPermanentApprovals: () => Permission[];
 
@@ -140,13 +142,21 @@ export class ApprovalManager {
     this.persistCallback = callback;
   }
 
+  private static makeExactKey(toolName: string, pattern: string): string {
+    return `${toolName}\0${pattern}`;
+  }
+
   /**
    * Check if an action is pre-approved (either session or permanent).
    */
   isActionApproved(toolName: string, input: Record<string, unknown>): boolean {
     const pattern = getActionPattern(toolName, input);
+    const exactKey = ApprovalManager.makeExactKey(toolName, pattern);
 
-    // Check session-scoped approvals
+    // Fast path: exact match in session approvals (covers Bash commands)
+    if (this.sessionExactKeys.has(exactKey)) return true;
+
+    // Slow path: prefix/wildcard matching for session approvals
     const sessionApproved = this.sessionApprovedActions.some(
       action => action.toolName === toolName && matchesPattern(toolName, pattern, action.pattern)
     );
@@ -178,6 +188,7 @@ export class ApprovalManager {
 
     if (scope === 'session') {
       this.sessionApprovedActions.push(action);
+      this.sessionExactKeys.add(ApprovalManager.makeExactKey(toolName, pattern));
     } else {
       if (this.persistCallback) {
         await this.persistCallback(action);
@@ -190,6 +201,7 @@ export class ApprovalManager {
    */
   clearSessionApprovals(): void {
     this.sessionApprovedActions = [];
+    this.sessionExactKeys.clear();
   }
 
   /**

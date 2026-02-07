@@ -743,7 +743,8 @@ export class ObsidianCodeService {
         behavior: 'allow',
         updatedInput: { ...input, answers },
       };
-    } catch {
+    } catch (error) {
+      console.warn('ObsidianCode: AskUserQuestion callback failed:', error);
       return {
         behavior: 'deny',
         message: 'Failed to get user response.',
@@ -769,8 +770,8 @@ export class ObsidianCodeService {
     try {
       // Notify UI to update state and queue re-send with plan mode
       await this.enterPlanModeCallback();
-    } catch {
-      // Non-critical: UI can detect plan mode from stream
+    } catch (error) {
+      console.warn('ObsidianCode: EnterPlanMode callback failed:', error);
     }
     return { behavior: 'allow', updatedInput: {} };
   }
@@ -799,8 +800,8 @@ export class ObsidianCodeService {
         if (fs.existsSync(planPath)) {
           planContent = fs.readFileSync(planPath, 'utf-8');
         }
-      } catch {
-        // Fall back to SDK input
+      } catch (error) {
+        console.warn('ObsidianCode: Failed to read plan file:', this.currentPlanFilePath, error);
       }
     }
 
@@ -859,7 +860,8 @@ export class ObsidianCodeService {
             interrupt: true,
           };
       }
-    } catch {
+    } catch (error) {
+      console.warn('ObsidianCode: ExitPlanMode callback failed:', error);
       return {
         behavior: 'deny',
         message: 'Failed to get plan approval.',
@@ -921,7 +923,8 @@ export class ObsidianCodeService {
       }
 
       return { behavior: 'allow', updatedInput: input };
-    } catch {
+    } catch (error) {
+      console.warn('ObsidianCode: Approval callback failed:', error);
       return {
         behavior: 'deny',
         message: 'Approval request failed.',

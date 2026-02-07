@@ -58,6 +58,7 @@ export class SelectableDropdown<T> {
   hide(): void {
     if (this.dropdownEl) {
       this.dropdownEl.removeClass('visible');
+      this.dropdownEl.setAttribute('aria-expanded', 'false');
     }
   }
 
@@ -77,6 +78,7 @@ export class SelectableDropdown<T> {
     }
 
     this.dropdownEl.empty();
+    this.dropdownEl.setAttribute('role', 'listbox');
     this.itemEls = [];
 
     if (options.items.length === 0) {
@@ -86,6 +88,8 @@ export class SelectableDropdown<T> {
       for (let i = 0; i < options.items.length; i++) {
         const item = options.items[i];
         const itemEl = this.dropdownEl.createDiv({ cls: this.options.itemClassName });
+        itemEl.setAttribute('role', 'option');
+        itemEl.setAttribute('aria-selected', String(i === this.selectedIndex));
 
         const extraClass = options.getItemClass?.(item);
         if (Array.isArray(extraClass)) {
@@ -117,15 +121,18 @@ export class SelectableDropdown<T> {
     }
 
     this.dropdownEl.addClass('visible');
+    this.dropdownEl.setAttribute('aria-expanded', 'true');
   }
 
   updateSelection(): void {
     this.itemEls.forEach((itemEl, index) => {
       if (index === this.selectedIndex) {
         itemEl.addClass('selected');
+        itemEl.setAttribute('aria-selected', 'true');
         itemEl.scrollIntoView({ block: 'nearest' });
       } else {
         itemEl.removeClass('selected');
+        itemEl.setAttribute('aria-selected', 'false');
       }
     });
   }

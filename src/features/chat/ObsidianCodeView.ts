@@ -181,6 +181,8 @@ export class ObsidianCodeView extends ItemView {
 
     // Cleanup UI components
     this.fileContextManager?.destroy();
+    this.fileContextManager = null;
+    this.imageContextManager = null;
     this.slashCommandDropdown?.destroy();
     this.slashCommandDropdown = null;
     this.slashCommandManager = null;
@@ -192,6 +194,7 @@ export class ObsidianCodeView extends ItemView {
     this.titleGenerationService = null;
     this.todoPanel?.destroy();
     this.todoPanel = null;
+    this.planBanner = null;
 
     // Cleanup async subagents
     this.asyncSubagentManager.orphanAllActive();
@@ -199,6 +202,26 @@ export class ObsidianCodeView extends ItemView {
 
     // Save conversation
     await this.conversationController?.save();
+
+    // Null out controllers and DOM refs to release memory
+    this.selectionController = null;
+    this.conversationController = null;
+    this.streamController = null;
+    this.inputController = null;
+    this.navigationController = null;
+    this.renderer = null;
+    this.messagesEl = null;
+    this.inputEl = null;
+    this.welcomeEl = null;
+    this.inputWrapper = null;
+    this.historyDropdown = null;
+    this.selectionIndicatorEl = null;
+    this.modelSelector = null;
+    this.thinkingBudgetSelector = null;
+    this.externalContextSelector = null;
+    this.mcpServerSelector = null;
+    this.permissionToggle = null;
+    this.contextUsageMeter = null;
   }
 
   // ============================================
@@ -398,18 +421,23 @@ export class ObsidianCodeView extends ItemView {
   // ============================================
 
   private initializeControllers() {
+    if (!this.selectionIndicatorEl || !this.inputEl || !this.renderer || !this.messagesEl) {
+      console.warn('ObsidianCodeView: required DOM elements not initialized');
+      return;
+    }
+
     // Selection controller
     this.selectionController = new SelectionController(
       this.plugin.app,
-      this.selectionIndicatorEl!,
-      this.inputEl!
+      this.selectionIndicatorEl,
+      this.inputEl
     );
 
     // Stream controller
     this.streamController = new StreamController({
       plugin: this.plugin,
       state: this.state,
-      renderer: this.renderer!,
+      renderer: this.renderer,
       asyncSubagentManager: this.asyncSubagentManager,
       getMessagesEl: () => this.messagesEl!,
       getFileContextManager: () => this.fileContextManager,
@@ -424,7 +452,7 @@ export class ObsidianCodeView extends ItemView {
       {
         plugin: this.plugin,
         state: this.state,
-        renderer: this.renderer!,
+        renderer: this.renderer,
         asyncSubagentManager: this.asyncSubagentManager,
         getHistoryDropdown: () => this.historyDropdown,
         getWelcomeEl: () => this.welcomeEl,
@@ -454,7 +482,7 @@ export class ObsidianCodeView extends ItemView {
     this.inputController = new InputController({
       plugin: this.plugin,
       state: this.state,
-      renderer: this.renderer!,
+      renderer: this.renderer,
       streamController: this.streamController,
       selectionController: this.selectionController,
       conversationController: this.conversationController,
@@ -484,22 +512,34 @@ export class ObsidianCodeView extends ItemView {
 
     // Set approval callback
     this.plugin.agentService.setApprovalCallback(
-      (toolName, input, description) => this.inputController!.handleApprovalRequest(toolName, input, description)
+      (toolName, input, description) => {
+        if (!this.inputController) return Promise.resolve('deny' as const);
+        return this.inputController.handleApprovalRequest(toolName, input, description);
+      }
     );
 
     // Set AskUserQuestion callback
     this.plugin.agentService.setAskUserQuestionCallback(
-      (input) => this.inputController!.handleAskUserQuestion(input)
+      (input) => {
+        if (!this.inputController) return Promise.resolve(null);
+        return this.inputController.handleAskUserQuestion(input);
+      }
     );
 
     // Set ExitPlanMode callback
     this.plugin.agentService.setExitPlanModeCallback(
-      (planFilePath) => this.inputController!.handleExitPlanMode(planFilePath)
+      (planFilePath) => {
+        if (!this.inputController) return Promise.resolve({ decision: 'cancel' as const });
+        return this.inputController.handleExitPlanMode(planFilePath);
+      }
     );
 
     // Set EnterPlanMode callback
     this.plugin.agentService.setEnterPlanModeCallback(
-      () => this.inputController!.handleEnterPlanMode()
+      () => {
+        if (!this.inputController) return Promise.resolve();
+        return this.inputController.handleEnterPlanMode();
+      }
     );
 
     // Navigation controller (vim-style keyboard navigation)
@@ -524,6 +564,9 @@ export class ObsidianCodeView extends ItemView {
   // ============================================
 
   private wireEventHandlers() {
+    const inputEl = this.inputEl;
+    if (!inputEl) return;
+
     // Document-level events
     this.registerDomEvent(document, 'click', () => {
       this.historyDropdown?.removeClass('visible');
@@ -557,7 +600,7 @@ export class ObsidianCodeView extends ItemView {
     });
 
     // Shift+Tab: Toggle plan mode (capture phase for priority)
-    this.inputEl!.addEventListener('keydown', (e) => {
+    inputEl.addEventListener('keydown', (e) => {
       if (e.key === 'Tab' && e.shiftKey && !this.state.isStreaming) {
         e.preventDefault();
         e.stopPropagation();
@@ -566,7 +609,7 @@ export class ObsidianCodeView extends ItemView {
     }, { capture: true });
 
     // Input events
-    this.inputEl!.addEventListener('keydown', (e) => {
+    inputEl.addEventListener('keydown', (e) => {
       // Check for # trigger first (empty input + # keystroke)
       if (this.instructionModeManager?.handleTriggerKey(e)) {
         return;
@@ -601,12 +644,12 @@ export class ObsidianCodeView extends ItemView {
       }
     });
 
-    this.inputEl!.addEventListener('input', () => {
+    inputEl.addEventListener('input', () => {
       this.fileContextManager?.handleInputChange();
       this.instructionModeManager?.handleInputChange();
     });
 
-    this.inputEl!.addEventListener('focus', () => {
+    inputEl.addEventListener('focus', () => {
       this.selectionController?.showHighlight();
     });
   }
