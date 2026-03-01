@@ -393,6 +393,11 @@ export class ObsidianCodeService {
     this.sessionManager.setPendingModel(selectedModel);
     this.vaultPath = cwd;
 
+    // Debug: log resolved CLI path and working directory
+    console.log('[ObsidianCode] CLI path:', cliPath);
+    console.log('[ObsidianCode] CWD:', cwd);
+    console.log('[ObsidianCode] Model:', selectedModel);
+
     // Parse custom environment variables from settings
     const customEnv = parseEnvironmentVariables(this.plugin.getActiveEnvironmentVariables());
 
@@ -435,6 +440,9 @@ export class ObsidianCodeService {
         ...process.env,
         ...customEnv,
         PATH: enhancedPath,
+      },
+      stderr: (message: string) => {
+        console.error('[ObsidianCode] CLI stderr:', message);
       },
     };
 
@@ -562,6 +570,7 @@ export class ObsidianCodeService {
         }
       }
     } catch (error) {
+      console.error('[ObsidianCode] SDK query error:', error);
       const msg = error instanceof Error ? error.message : 'Unknown error';
       yield { type: 'error', content: msg };
     } finally {
